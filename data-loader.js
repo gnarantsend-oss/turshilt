@@ -63,7 +63,6 @@ export async function loadData() {
 function buildHomeRows() {
   
   const run = () => {
-    fillRow('rowFeatured', window.MOVIES.slice(0, 30));
     fillRow('rowSeries',   window.SERIES.slice(0, 20), true);
 
     const dc = document.getElementById('dynamicRows');
