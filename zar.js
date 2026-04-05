@@ -10,16 +10,44 @@ function _zarInjectCSS() {
   document.head.appendChild(s);
 }
 
-// ── 1-р зар: Popunder + Social Bar script-ууд ────────────────
+// ── 1-р зар: Popunder + Social Bar ──────────────────────────
 function initGlobalAds() {
   if (!window.GLOBAL_ADS) return;
-  [window.GLOBAL_ADS.popunder, window.GLOBAL_ADS.socialBar].forEach(src => {
+  const ads = window.GLOBAL_ADS;
+
+  // Popunder + Social Bar script-ууд
+  [ads.popunder, ads.socialBar].forEach(src => {
     if (!src) return;
     const s = document.createElement('script');
     s.src = src;
     s.async = true;
     document.head.appendChild(s);
   });
+
+  // Banner 728x90 — placeholder slot руу inject хийнэ
+  const slot = document.getElementById('adsterra-banner-slot');
+  if (slot && ads.bannerKey) {
+    slot.className = 'adsterra-banner-wrap';
+    slot.innerHTML = `
+      <div class="adsterra-banner-inner">
+        <script>
+          atOptions = {
+            'key' : '${ads.bannerKey}',
+            'format' : 'iframe',
+            'height' : 90,
+            'width' : 728,
+            'params' : {}
+          };
+        <\/script>
+        <script src="https://www.highperformanceformat.com/${ads.bannerKey}/invoke.js"><\/script>
+      </div>`;
+  }
+
+  // Nav smartlink
+  if (ads.smartlink) {
+    const navLink = document.getElementById('nav-smartlink');
+    if (navLink) navLink.href = ads.smartlink;
+  }
 }
 
 // ── Banner element үүсгэх ─────────────────────────────────────
@@ -41,7 +69,7 @@ function _zarBuildEl(b) {
 
   } else if (imgSrc) {
     // зургийн banner — link байвал дарахад очно
-    const href = b.link || imgSrc;
+    const href = b.link || window.GLOBAL_ADS?.smartlink || imgSrc;
     wrap.innerHTML = `
       <a href="${href}" target="_blank" rel="noopener"
          class="ad-img-box" style="display:block;text-decoration:none;position:relative;">

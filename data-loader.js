@@ -109,14 +109,14 @@ function makeBannerDiv() {
     <div class="adsterra-banner-inner">
       <script>
         atOptions = {
-          'key' : 'd2854ac5234b3ab02d5a2839d6dbef5e',
+          'key' : (window.GLOBAL_ADS?.bannerKey || 'd2854ac5234b3ab02d5a2839d6dbef5e'),
           'format' : 'iframe',
           'height' : 90,
           'width' : 728,
           'params' : {}
         };
       <\/script>
-      <script src="https://www.highperformanceformat.com/d2854ac5234b3ab02d5a2839d6dbef5e/invoke.js"><\/script>
+      <script src="https://www.highperformanceformat.com/${window.GLOBAL_ADS?.bannerKey||'d2854ac5234b3ab02d5a2839d6dbef5e'}/invoke.js"><\/script>
     </div>`;
   return wrap;
 }
