@@ -11,9 +11,7 @@ import './movies.js';
 import { buildSeriesPage } from './series.js';
 import './search.js';
 import { loadData } from './data-loader.js';
-
-window.MOVIES = [];
-window.SERIES = [];
+import './hacker-mobile.js';
 
 window.addEventListener('scroll', () => {
   const nav = document.getElementById('navbar');
@@ -42,11 +40,15 @@ window.gotoPage = function (p) {
   document.getElementById('page-' + p)?.classList.add('active');
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('t-' + p)?.classList.add('active');
+
+  // Mobile bottom nav sync
+  document.querySelectorAll('.bnav-item').forEach(t => t.classList.remove('active'));
+  document.getElementById('bn-' + p)?.classList.add('active');
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 
   if (window.setPageHero)  window.setPageHero(p);
   if (p === 'games'   && window.buildGamesPage)  window.buildGamesPage();
-  if (p === 'movies'  && window.buildMoviesPage) window.buildMoviesPage();
   if (p === 'weather' && window.loadWeather)     window.loadWeather();
   if (p === 'search') setTimeout(() => document.getElementById('searchPageInput')?.focus(), 300);
 };

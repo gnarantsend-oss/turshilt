@@ -1,21 +1,14 @@
 [
   {
-    "id": 1,
+    "id": "id1",
+    "type": "adsterra",
     "afterRowId": "rowSeries",
-    "type": "image",
-    "src": "https://img.freepik.com/free-vector/streaming-online-app-concept-banner_23-2148530364.jpg",
-    "label": "РЕКЛАМ"
+    "active": true
   },
   {
-    "id": 2,
-    "type": "image",
-    "src": "https://img.freepik.com/free-vector/movie-theater-concept-banner-template_23-2148175024.jpg",
-    "label": "РЕКЛАМ"
-  },
-  {
-    "id": 3,
-    "type": "image",
-    "src": "https://img.freepik.com/free-vector/movie-theater-concept-banner-template_23-2148175024.jpg",
-    "label": "РЕКЛАМ"
+    "id": "id2",
+    "type": "adsterra",
+    "afterRowId": "rowInternational",
+    "active": true
   }
 ]

@@ -1,4 +1,4 @@
-import { showPoster, hidePoster, animateContent, startProgress } from './hero-utils.js';
+import { animateContent, startProgress } from './hero-utils.js';
 
 let hi   = 0;
 let hInt = null;
@@ -6,14 +6,11 @@ let hInt = null;
 export function startSlide() {
   clearInterval(hInt);
   hInt = setInterval(() => {
-    const cont = document.getElementById('heroVideoContainer');
-    if (!cont?.hasChildNodes()) {
-      window.setHero((hi + 1) % window.HERO_MOVIES.length);
-    }
+    window.setHero((hi + 1) % window.HERO_MOVIES.length);
   }, window.HERO_TIMER || 12000);
 }
 
-window.setHero = async (i) => {
+window.setHero = (i) => {
   hi = i;
   const m = window.HERO_MOVIES?.[i];
   if (!m) return;
@@ -41,55 +38,27 @@ window.setHero = async (i) => {
 
   animateContent();
   startProgress();
-  window.stopTrailer();
 
-  
-  showPoster(m.poster);
-  window.hideVolBtn();
-  window._heroMuted = true;
-  window.updateVolBtn(true);
-
-  
-  _loadTrailerAsync(m, i);
+  const btns = document.getElementById('heroBtns');
+  if (btns) {
+    btns.innerHTML = `
+      <button class="btn-watch" onclick="window.openMovieDetail(window.HERO_MOVIES[${i}])">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Үзэх
+      </button>
+      <button class="btn-more" onclick="window.openMovieDetail(window.HERO_MOVIES[${i}])">ℹ Дэлгэрэнгүй</button>`;
+  }
 };
 
-async function _loadTrailerAsync(m, slideIndex) {
-  let trailerUrl = m.trailer || null;
 
-  if (!trailerUrl && m.tmdbId) {
-    trailerUrl = await window.fetchTrailerKey(m.tmdbId);
-    
-    if (trailerUrl) m.trailer = trailerUrl;
-  }
-
-  
-  if (hi !== slideIndex) return;
-
-  if (trailerUrl) {
-    const type = window.detectTrailerType(trailerUrl);
-    if (type) {
-      window.playTrailer(
-        trailerUrl, type,
-        () => { hidePoster(); window.showVolBtn(); },
-        () => window.setHero((slideIndex + 1) % window.HERO_MOVIES.length),
-        () => { showPoster(m.poster); window.hideVolBtn(); }
-      );
-    }
-  }
-}
 
 window.initHero = function () {
   if (!window.HERO_MOVIES?.length) return;
-  window.hideVolBtn();
 
   const tag = document.getElementById('heroTag');
   if (tag) tag.textContent = '🔥 ДЭЛХИЙН ШИЛДЭГ';
 
   const btns = document.getElementById('heroBtns');
-  if (btns) {
-    btns.innerHTML = `
-      <button class="btn-volume" id="heroVolumeBtn" onclick="toggleHeroVolume()">🔇 Дууг нээх</button>`;
-  }
+  if (btns) btns.innerHTML = '';
 
   const dotsEl = document.getElementById('heroDots');
   if (dotsEl) {

@@ -9,7 +9,6 @@ window.setPageHero = function (page) {
   
   if (page === 'search') {
     if (heroWrap) heroWrap.style.display = 'none';
-    window.stopTrailer?.();
     clearInterval(window._heroInterval);
     stopProgress();
     return;

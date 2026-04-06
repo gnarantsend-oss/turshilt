@@ -1,8 +1,6 @@
-import { showPoster, hidePoster, animateContent } from './hero-utils.js';
+import { animateContent } from './hero-utils.js';
 
 export function initGamesHero() {
-  window.stopTrailer?.();
-
   const games = window.HERO_GAMES || [];
   if (!games.length) return;
 
@@ -12,9 +10,6 @@ export function initGamesHero() {
   function showGame(idx) {
     const g = games[idx];
     if (!g) return;
-
-    const posterUrl = `https://img.youtube.com/vi/${g.trailer}/hqdefault.jpg`;
-    showPoster(posterUrl);
 
     const tag = document.getElementById('heroTag');
     if (tag) tag.innerHTML = `🎮 ${(g.cat || 'ТОГЛООМ').toUpperCase()}`;
@@ -51,33 +46,17 @@ export function initGamesHero() {
         <button class="btn-more"
           onclick="document.getElementById('gameGenreBar')?.scrollIntoView({behavior:'smooth'})">
           🎮 Бүгд харах
-        </button>
-        <button class="btn-volume" id="heroVolumeBtn" onclick="toggleHeroVolume()" style="display:none">🔇 Дууг нээх</button>`;
+        </button>`;
     }
 
     animateContent();
-    window.hideVolBtn?.();
-    window.stopTrailer?.();
-
-    const ytUrl = `https://www.youtube.com/watch?v=${g.trailer}`;
-    const type  = window.detectTrailerType?.(ytUrl);
-    if (type) {
-      window.playTrailer?.(ytUrl, type,
-        () => { hidePoster(); window.showVolBtn?.(); },
-        () => { gi = (gi + 1) % games.length; showGame(gi); startGameSlide(); },
-        () => { showPoster(posterUrl); window.hideVolBtn?.(); }
-      );
-    }
   }
 
   function startGameSlide() {
     clearInterval(gInt);
     gInt = setInterval(() => {
-      const cont = document.getElementById('heroVideoContainer');
-      if (!cont?.hasChildNodes()) {
-        gi = (gi + 1) % games.length;
-        showGame(gi);
-      }
+      gi = (gi + 1) % games.length;
+      showGame(gi);
     }, window.GAME_TIMER || 14000);
   }
 

@@ -8,19 +8,6 @@ const _GENRE_MAP = {
   10749:'Romance',878:'Sci-Fi',53:'Thriller',10752:'War'
 };
 
-window.fetchTrailerKey = async (tmdbId) => {
-  const k = 'nb_tr_' + tmdbId;
-  try { const c = sessionStorage.getItem(k); if (c !== null) return c || null; } catch {}
-  try {
-    const r = await fetch(`https://api.themoviedb.org/3/movie/${tmdbId}/videos?api_key=${window.TMDB_KEY}`);
-    const d = await r.json();
-    const t = d.results?.find(v => v.site==='YouTube' && (v.type==='Trailer'||v.type==='Teaser'));
-    const url = t?.key ? `https://www.youtube.com/watch?v=${t.key}` : '';
-    try { sessionStorage.setItem(k, url); } catch {}
-    return url || null;
-  } catch { return null; }
-};
-
 function _fillRow(movies) {
   const el = document.getElementById('rowInternational');
   if (!el) return;
@@ -38,7 +25,6 @@ function _parseTMDB(results) {
     embed: `https://vidsrc.to/embed/movie/${m.id}`,
     cat: (m.genre_ids||[]).slice(0,3).map(id=>_GENRE_MAP[id]).filter(Boolean).join(', '),
     overview: m.overview ? (m.overview.length>180 ? m.overview.slice(0,177)+'...' : m.overview) : '',
-    trailer: null,
   }));
 }
 
