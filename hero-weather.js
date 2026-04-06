@@ -1,13 +1,12 @@
 import { animateContent } from './hero-utils.js';
 
 export function initWeatherHero() {
-  window.stopTrailer?.();
 
   const bg = document.querySelector('.hero-bg');
   if (bg) {
     bg.style.backgroundImage = '';
-    bg.style.background = 'linear-gradient(135deg, #1a237e 0%, #0277bd 50%, #01579b 100%)';
-    bg.style.opacity    = '1';
+    bg.style.background      = 'transparent';
+    bg.style.opacity         = '0';
   }
   const vig = document.querySelector('.hero-vignette');
   if (vig) vig.style.opacity = '1';
@@ -33,7 +32,6 @@ export function initWeatherHero() {
       <button class="btn-watch" onclick="window.loadWeather?.()">☁️ Цаг агаар харах</button>
       <button class="btn-more"  onclick="window.refreshWeather?.()">🔄 Шинэчлэх</button>`;
   }
-  window.hideVolBtn?.();
   animateContent();
 
   const cityQuery = window.DEFAULT_CITY || 'Ulaanbaatar';
@@ -62,14 +60,8 @@ export function initWeatherHero() {
         <span>·</span><span>💧 ${d.main.humidity}%</span>
         <span>·</span><span>💨 ${(d.wind.speed * 3.6).toFixed(0)} км/ц</span>`;
 
-      let gradient = 'linear-gradient(135deg,#1a237e,#0277bd,#01579b)';
-      if      (temp < -20) gradient = 'linear-gradient(135deg,#0d1b2a,#1b2a3b,#4fc3f7)';
-      else if (temp <  -5) gradient = 'linear-gradient(135deg,#1a237e,#283593,#81d4fa)';
-      else if (temp >  20) gradient = 'linear-gradient(135deg,#4a0000,#b71c1c,#ff8f00)';
-      else if (temp >  10) gradient = 'linear-gradient(135deg,#1b5e20,#2e7d32,#66bb6a)';
-
       const b = document.querySelector('.hero-bg');
-      if (b) b.style.background = gradient;
+      if (b) { b.style.background = 'transparent'; b.style.opacity = '0'; }
     })
     .catch(() => {});
 }

@@ -102,25 +102,6 @@ export async function loadData() {
   }
 }
 
-function makeBannerDiv() {
-  const wrap = document.createElement('div');
-  wrap.className = 'adsterra-banner-wrap';
-  wrap.innerHTML = `
-    <div class="adsterra-banner-inner">
-      <script>
-        atOptions = {
-          'key' : (window.GLOBAL_ADS?.bannerKey || 'd2854ac5234b3ab02d5a2839d6dbef5e'),
-          'format' : 'iframe',
-          'height' : 90,
-          'width' : 728,
-          'params' : {}
-        };
-      <\/script>
-      <script src="https://www.highperformanceformat.com/${window.GLOBAL_ADS?.bannerKey||'d2854ac5234b3ab02d5a2839d6dbef5e'}/invoke.js"><\/script>
-    </div>`;
-  return wrap;
-}
-
 function buildHomeRows() {
 
   const run = async () => {
@@ -129,8 +110,6 @@ function buildHomeRows() {
     const dc = document.getElementById('dynamicRows');
     if (dc && window.HOME_ROWS) {
       dc.innerHTML = '';
-      let rowCount = 0;
-
       window.HOME_ROWS.forEach(({ id, title, keys }) => {
         const items = window.MOVIES.filter(m => keys.some(k => m.cat.includes(k))).slice(0, 25);
         if (items.length > 0) {
@@ -145,13 +124,6 @@ function buildHomeRows() {
             </div>`;
           dc.appendChild(sec);
           fillRow(id, items);
-          rowCount++;
-
-          // Mobile: бүр row-ийн ард, Desktop: 3 тутамд
-          const isMobile = window.innerWidth < 768;
-          if (isMobile || rowCount % 3 === 0) {
-            dc.appendChild(makeBannerDiv());
-          }
         }
       });
     }
