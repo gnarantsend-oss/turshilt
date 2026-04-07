@@ -428,7 +428,7 @@
       createScanBeam(hero);
       patchVignette();
       styleNavTabs();
-      observeTitle();
+      // observeTitle(); // hero title removed
 
       /* Desktop дээр л overlay элементүүд нэмнэ */
       if (!isMobile) {

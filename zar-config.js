@@ -9,6 +9,16 @@ window.GLOBAL_ADS = {
   // 2. Social Bar — Anti-Adblock URL (progressmagnify.com)
   socialBar: 'https://progressmagnify.com/fe/a7/e6/fea7e69d388311cc0a7cfdfb22e9c372.js',
 
-  // 4. Smartlink — Anti-Adblock URL (progressmagnify.com)
-  smartlink: 'https://progressmagnify.com/p2i14tfiwb?key=4414465ba4bfd51bebb6566079182951'
+  // ── MONETAG ───────────────────────────────────────────────────
+  // Дардаггүй, автоматаар гарч ирдэг зарууд л ажиллана
+
+  // 1. Vignette Banner — Zone: 10842266 (хуудас солих үед гарна)
+  monetagVignette: 'https://n6wxm.com/vignette.min.js',
+  monetagVignetteZone: '10842266',
+
+  // 2. In-Page Push (Banner) — Zone: 10842268 (хуудасны доор гарна)
+  monetagInPage: 'https://nap5k.com/tag.min.js',
+  monetagInPageZone: '10842268',
+
+  // Push Notifications хасагдсан — click шаарддаг тул Popunder-тэй мөргөлддөг
 };

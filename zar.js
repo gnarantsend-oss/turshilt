@@ -120,31 +120,7 @@ async function checkAndEnforceAdBlock() {
 // Арга: event delegation — динамикаар нэмэгдэх элементүүдэд
 //       автоматаар ажиллана (MutationObserver шаардлагагүй)
 // ──────────────────────────────────────────────────────────────
-function _hookSmartlinks() {
-  const sl = window.GLOBAL_ADS?.smartlink;
-  if (!sl || window.isTV) return;
-
-  // Nav линк
-  const navLink = document.getElementById('nav-smartlink');
-  if (navLink) navLink.href = sl;
-
-  // Event delegation — бүх click-ийг барина
-  document.addEventListener('click', function (e) {
-
-    // 1. Кино постер зураг дарахад (mcard-poster-wrap дотор)
-    if (e.target.closest('.mcard-poster-wrap')) {
-      window.open(sl, '_blank', 'noopener,noreferrer');
-      return; // movie detail modal үргэлжлэн нээгдэнэ
-    }
-
-    // 2. "Үзэх" / Watch товч дарахад (movie modal дотор)
-    if (e.target.closest('.btn-watch')) {
-      window.open(sl, '_blank', 'noopener,noreferrer');
-      return; // player нь үргэлжлэн нээгдэнэ
-    }
-
-  }, true); // capture phase — бусад handler-уудаас ӨМНӨ ажиллана
-}
+// Smartlink хасагдсан
 
 // ══════════════════════════════════════════════════════════════
 // ── GLOBAL ADS: Popunder + Social Bar ────────────────────────
@@ -153,18 +129,54 @@ function initGlobalAds() {
   if (!window.GLOBAL_ADS) return;
   const ads = window.GLOBAL_ADS;
 
-  // Popunder + Social Bar (TV дээр ажиллуулахгүй)
+  // Popunder — <head> дотор ачааллана
   if (!window.isTV) {
-    if (ads.popunder)  _loadScript(ads.popunder,  { 'data-cfasync': 'false' });
-    if (ads.socialBar) _loadScript(ads.socialBar, { 'data-cfasync': 'false' });
+    if (ads.popunder) _loadScript(ads.popunder, { 'data-cfasync': 'false' });
   }
 
-  // Smartlink hooks
-  _hookSmartlinks();
+  // Social Bar — DOM бэлэн болсны дараа ачааллана (2026 стандарт)
+  if (!window.isTV && ads.socialBar) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        _loadScript(ads.socialBar, { 'data-cfasync': 'false' });
+      });
+    } else {
+      _loadScript(ads.socialBar, { 'data-cfasync': 'false' });
+    }
+  }
 }
 
 // ── Эхлүүлэх ─────────────────────────────────────────────────
 window.addEventListener('load', async () => {
   const blocked = await checkAndEnforceAdBlock();
-  if (!blocked) initGlobalAds();
+  if (!blocked) {
+    initGlobalAds();
+
+    // ── MONETAG — дардаггүй автомат зарууд ──────────────────────
+    // Adblock байхгүй үед л ачааллана
+    // Vignette + In-Page Push хоёулаа <head> дотор байх ёстой
+    if (!window.isTV) {
+      const ads = window.GLOBAL_ADS || {};
+
+      // 1. Vignette Banner — хуудас нээгдэхэд дэлгэцийн төвд гарна
+      if (ads.monetagVignette) {
+        const s = document.createElement('script');
+        s.dataset.zone = ads.monetagVignetteZone;
+        s.src = ads.monetagVignette;
+        s.async = true;
+        s.setAttribute('data-cfasync', 'false');
+        document.head.appendChild(s);
+      }
+
+      // 2. In-Page Push — буланд push notification хэлбэртэй гарна
+      if (ads.monetagInPage) {
+        const s = document.createElement('script');
+        s.dataset.zone = ads.monetagInPageZone;
+        s.src = ads.monetagInPage;
+        s.async = true;
+        s.setAttribute('data-cfasync', 'false');
+        document.head.appendChild(s);
+      }
+    }
+  }
 });
