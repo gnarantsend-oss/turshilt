@@ -20,10 +20,9 @@ export default function Navbar() {
           : "bg-gradient-to-b from-black/90 to-transparent"
       }`}
     >
-      {/* Left: Logo + Links */}
       <div className="flex items-center gap-8">
         <span
-          className="text-[#E50914] text-4xl tracking-widest font-display select-none"
+          className="text-[#E50914] text-4xl tracking-widest select-none"
           style={{ fontFamily: "'Bebas Neue', sans-serif" }}
         >
           NABO
@@ -39,19 +38,14 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Right: Actions */}
       <div className="flex items-center gap-5 text-gray-300">
-        <button className="hover:text-white transition-colors">
-          <Search size={20} />
-        </button>
+        <button className="hover:text-white transition-colors"><Search size={20} /></button>
         <button className="hover:text-white transition-colors relative">
           <Bell size={20} />
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#E50914] rounded-full" />
         </button>
         <div className="flex items-center gap-2 cursor-pointer group">
-          <div className="w-8 h-8 rounded bg-[#E50914] flex items-center justify-center text-sm font-bold">
-            Н
-          </div>
+          <div className="w-8 h-8 rounded bg-[#E50914] flex items-center justify-center text-sm font-bold">Н</div>
           <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
         </div>
       </div>
