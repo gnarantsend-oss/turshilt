@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Search, Bell, ChevronDown, X, LogOut, User, List } from "lucide-react";
+import { Search, Bell, ChevronDown, X, LogOut, User, List, Menu } from "lucide-react";
 import { useSession, signOut, signIn } from "next-auth/react";
 import moviesData from "@/lib/movies.json";
 
@@ -31,6 +31,7 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
   const [searchOpen, setSearchOpen]   = useState(false);
   const [searchQ, setSearchQ]         = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
+  const [mobileOpen, setMobileOpen]   = useState(false);
   const [activeNav, setActiveNav]     = useState("hero-section");
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -41,19 +42,18 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
   }, []);
 
   useEffect(() => {
-    if (searchOpen) {
+    if (searchOpen || mobileOpen) {
       document.body.style.overflow = "hidden";
-      setTimeout(() => document.getElementById("search-input")?.focus(), 100);
+      if (searchOpen) setTimeout(() => document.getElementById("search-input")?.focus(), 100);
     } else {
       document.body.style.overflow = "";
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSearchQ("");
     }
-  }, [searchOpen]);
+    if (!searchOpen) setSearchQ("");
+  }, [searchOpen, mobileOpen]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { setSearchOpen(false); setProfileOpen(false); }
+      if (e.key === "Escape") { setSearchOpen(false); setProfileOpen(false); setMobileOpen(false); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -74,6 +74,7 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
 
   const scrollTo = (id: string) => {
     setActiveNav(id);
+    setMobileOpen(false);
     onNavClick?.(id);
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -82,11 +83,11 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
   const initials = session?.user?.name ? session.user.name.charAt(0).toUpperCase() : "Н";
 
   const navLinks = [
-    { label: "Нүүр",            id: "hero-section" },
-    { label: "Трэнд",           id: "trending-section" },
-    { label: "Шинэ",            id: "new-section" },
-    { label: "Жанрын дагуу",    id: "genre-section" },
-    { label: "Миний жагсаалт",  id: "mylist-section" },
+    { label: "Нүүр",           id: "hero-section" },
+    { label: "Трэнд",          id: "trending-section" },
+    { label: "Шинэ",           id: "new-section" },
+    { label: "Жанрын дагуу",   id: "genre-section" },
+    { label: "Миний жагсаалт", id: "mylist-section" },
   ];
 
   return (
@@ -95,7 +96,8 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
         scrolled ? "bg-[#141414] shadow-[0_2px_20px_rgba(0,0,0,0.8)]" : "bg-gradient-to-b from-black/90 to-transparent"
       }`}>
         <div className="flex items-center gap-8">
-          <button onClick={() => scrollTo("hero-section")} style={{ fontFamily:"'Bebas Neue',sans-serif", background:"none", border:"none", cursor:"pointer", padding:0 }}
+          <button onClick={() => scrollTo("hero-section")}
+            style={{ fontFamily:"'Bebas Neue',sans-serif", background:"none", border:"none", cursor:"pointer", padding:0 }}
             className="text-[#E50914] text-4xl tracking-widest select-none">
             NABO
           </button>
@@ -110,19 +112,19 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-5 text-gray-300">
+        <div className="flex items-center gap-4 text-gray-300">
           <button onClick={() => setSearchOpen(true)} className="hover:text-white transition-colors" title="Хайх">
             <Search size={20} />
           </button>
-          <button className="hover:text-white transition-colors relative" title="Мэдэгдэл"
+
+          <button className="hidden md:flex hover:text-white transition-colors relative" title="Мэдэгдэл"
             onClick={() => alert("Шинэ мэдэгдэл байхгүй")}>
             <Bell size={20} />
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#E50914] rounded-full" />
           </button>
 
-          <div className="relative" ref={profileRef}>
-            <button onClick={() => setProfileOpen(p => !p)}
-              className="flex items-center gap-2 cursor-pointer" title="Профайл">
+          <div className="relative hidden md:block" ref={profileRef}>
+            <button onClick={() => setProfileOpen(p => !p)} className="flex items-center gap-2 cursor-pointer" title="Профайл">
               {session?.user?.image ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={session.user.image} alt="user" className="w-8 h-8 rounded object-cover" />
@@ -165,9 +167,117 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
               </div>
             )}
           </div>
+
+          {/* ── Hamburger — mobile only ── */}
+          <button
+            className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg hover:bg-white/10 transition-colors"
+            aria-label="Цэс нээх"
+            aria-expanded={mobileOpen}
+            onClick={() => setMobileOpen(s => !s)}
+          >
+            {mobileOpen ? <X size={20} className="text-white" /> : <Menu size={20} className="text-gray-300" />}
+          </button>
         </div>
       </nav>
 
+      {/* ── Mobile Drawer ── */}
+      {mobileOpen && (
+        <>
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+            onClick={() => setMobileOpen(false)}
+          />
+          {/* Panel */}
+          <div
+            className="fixed top-0 right-0 h-full w-72 z-50 md:hidden flex flex-col"
+            style={{
+              background: "rgba(14,14,14,0.97)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              borderLeft: "1px solid rgba(255,255,255,0.07)",
+              boxShadow: "-8px 0 40px rgba(0,0,0,0.7)",
+            }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
+              <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:"1.6rem", letterSpacing:"0.12em", color:"#E50914" }}>
+                NABO
+              </span>
+              <button onClick={() => setMobileOpen(false)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white">
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Nav линкүүд */}
+            <nav className="flex flex-col gap-1 px-3 py-4 flex-1 overflow-y-auto">
+              {navLinks.map(({ label, id }) => {
+                const active = activeNav === id;
+                return (
+                  <button key={id} onClick={() => scrollTo(id)}
+                    className="w-full flex items-center px-4 py-3.5 rounded-xl text-left transition-all"
+                    style={{
+                      fontFamily: "'Barlow',sans-serif",
+                      fontSize: "0.95rem",
+                      fontWeight: active ? 700 : 500,
+                      border: "none",
+                      cursor: "pointer",
+                      background: active ? "rgba(201,168,76,0.1)" : "transparent",
+                      color: active ? "#C9A84C" : "rgba(255,255,255,0.75)",
+                      borderLeft: active ? "2px solid #C9A84C" : "2px solid transparent",
+                    }}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* Профайл — доод хэсэг */}
+            <div style={{ borderTop:"1px solid rgba(255,255,255,0.07)", padding:"16px 12px" }}>
+              {session?.user && (
+                <div className="flex items-center gap-3 px-4 py-3 mb-2 rounded-xl" style={{ background:"rgba(255,255,255,0.04)" }}>
+                  {session.user.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={session.user.image} alt="user" className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-[#E50914] flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
+                      {initials}
+                    </div>
+                  )}
+                  <div className="overflow-hidden">
+                    <p className="text-white text-sm font-semibold truncate">{session.user.name}</p>
+                    <p className="text-gray-500 text-xs truncate">{session.user.email}</p>
+                  </div>
+                </div>
+              )}
+
+              <button onClick={() => scrollTo("mylist-section")}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/5"
+                style={{ fontFamily:"'Barlow',sans-serif", fontSize:"0.9rem", color:"rgba(255,255,255,0.7)", border:"none", background:"none", cursor:"pointer" }}>
+                <List size={16} /> Миний жагсаалт
+              </button>
+
+              {session ? (
+                <button onClick={() => { setMobileOpen(false); signOut({ callbackUrl:"/login" }); }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/5"
+                  style={{ fontFamily:"'Barlow',sans-serif", fontSize:"0.9rem", color:"#f87171", border:"none", background:"none", cursor:"pointer" }}>
+                  <LogOut size={16} /> Гарах
+                </button>
+              ) : (
+                <button onClick={() => { setMobileOpen(false); signIn(); }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/5"
+                  style={{ fontFamily:"'Barlow',sans-serif", fontSize:"0.9rem", color:"rgba(255,255,255,0.7)", border:"none", background:"none", cursor:"pointer" }}>
+                  <User size={16} /> Нэвтрэх
+                </button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Search Overlay ── */}
       {searchOpen && (
         <div className="search-overlay" onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false); }}>
           <div className="search-input-wrap">
@@ -184,7 +294,8 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
               ) : results.map(m => (
                 <div key={m.id} className="search-result-card"
                   onClick={() => { onMovieSelect?.(m); setSearchOpen(false); }}>
-                  <img src={m.poster || m.banner} alt={m.title} // eslint-disable-line @next/next/no-img-element
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={m.poster || m.banner} alt={m.title}
                     style={{ width:"100%", height:110, objectFit:"cover", display:"block" }} />
                   <div className="search-result-info">
                     <div style={{ marginBottom:2 }}>{m.title}</div>
