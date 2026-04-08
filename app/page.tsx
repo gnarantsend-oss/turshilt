@@ -1,5 +1,6 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { useState, useCallback, useEffect } from "react";
 import { Play, Info, Plus, ThumbsUp, ChevronDown, X, Check, ArrowLeft, Compass } from "lucide-react";
@@ -91,10 +92,28 @@ function MovieModal({
   }, [onClose]);
 
   return (
-    <div className="modal-overlay" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
-      <div className="modal-box">
+    <motion.div
+      className="modal-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <motion.div
+        className="modal-box"
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        transition={{ type: "spring", stiffness: 280, damping: 30 }}
+      >
         <div className="modal-banner">
-          {img && <Image src={img} alt={movie.title} fill className="object-cover" sizes="820px" priority />}
+          {img && (
+            <motion.div layoutId={`movie-img-${movie.id}`} style={{ position:"absolute", inset:0 }}
+              transition={{ type:"spring", stiffness:280, damping:30 }}>
+              <Image src={img} alt={movie.title} fill className="object-cover" sizes="820px" priority />
+            </motion.div>
+          )}
           <div className="modal-banner-grad" />
           <button className="modal-close-btn" onClick={onClose}><X size={16} /></button>
         </div>
@@ -140,8 +159,8 @@ function MovieModal({
             </>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -201,13 +220,19 @@ function MovieCard({
   return (
     <div className="movie-card" style={cardStyle}>
       <div className="movie-card-inner">
-        {imgSrc ? (
-          <Image src={imgSrc} alt={movie.title} fill className="object-cover" sizes="160px" />
-        ) : (
-          <div style={{ width:"100%", height:"100%", background:"#1a1a1a", display:"flex", alignItems:"center", justifyContent:"center", padding:8 }}>
-            <span style={{ color:"rgba(255,255,255,0.3)", fontSize:"0.75rem", textAlign:"center" }}>{movie.title}</span>
-          </div>
-        )}
+        <motion.div
+          layoutId={`movie-img-${movie.id}`}
+          style={{ position:"absolute", inset:0 }}
+          transition={{ type:"spring", stiffness:280, damping:30 }}
+        >
+          {imgSrc ? (
+            <Image src={imgSrc} alt={movie.title} fill className="object-cover" sizes="160px" />
+          ) : (
+            <div style={{ width:"100%", height:"100%", background:"#1a1a1a", display:"flex", alignItems:"center", justifyContent:"center", padding:8 }}>
+              <span style={{ color:"rgba(255,255,255,0.3)", fontSize:"0.75rem", textAlign:"center" }}>{movie.title}</span>
+            </div>
+          )}
+        </motion.div>
         <div className="card-grad" />
         <div className="card-info">
           <div className="card-rating">★ {movie.rating}</div>
@@ -545,10 +570,12 @@ export default function Home() {
         </div>
 
         {playingMovie && <VideoPlayer movie={playingMovie} onClose={handleClosePlayer} />}
-        {modalMovie && (
-          <MovieModal movie={modalMovie} onClose={() => setModalMovie(null)}
-            onPlay={handlePlay} myList={myList} onToggleList={handleToggleList} />
-        )}
+        <AnimatePresence>
+          {modalMovie && (
+            <MovieModal key={modalMovie.id} movie={modalMovie} onClose={() => setModalMovie(null)}
+              onPlay={handlePlay} myList={myList} onToggleList={handleToggleList} />
+          )}
+        </AnimatePresence>
 
         {/* TikTok-style Discover Feed */}
         {showDiscover && (
