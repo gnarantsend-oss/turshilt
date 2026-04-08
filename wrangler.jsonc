@@ -19,7 +19,15 @@
   "images": {
     "binding": "IMAGES"
   },
-  "observability": {
-    "enabled": true
-  }
+  "observability": { "enabled": true },
+
+  // ── D1 өгөгдлийн сан ───────────────────────────────────────────────────────
+  // Үүсгэх: npx wrangler d1 create nabo-db
+  "d1_databases": [
+    {
+      "binding":      "DB",
+      "database_name":"nabo-db",
+      "database_id":  "ЭНИЙГ_WRANGLER_D1_CREATE_ГАРНА"
+    }
+  ]
 }
