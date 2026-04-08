@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "main": ".open-next/worker.js",
+  "name": "turshilt",
+  "compatibility_date": "2026-04-08",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "turshilt"
+    }
+  ],
+  "images": {
+    "binding": "IMAGES"
+  },
+  "observability": { "enabled": true },
+
+  // ── D1 өгөгдлийн сан ───────────────────────────────────────────────────────
+  // 1-р алхам: npx wrangler d1 create nabo-db
+  // 2-р алхам: гарч ирсэн database_id-г доорх утганд солино
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "nabooshy",
+      "database_id": "7612f03d-8c48-4754-9927-2717ad1b6e4a"
+    }
+  ]
+}
