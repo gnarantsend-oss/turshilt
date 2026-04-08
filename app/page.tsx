@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState, useCallback, useEffect } from "react";
 import { Play, Info, Plus, ThumbsUp, ChevronDown, X, Check, ArrowLeft } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import HackerIntro from "@/components/HackerIntro";
 import moviesData from "@/lib/movies.json";
 
 type Movie = {
@@ -362,6 +363,7 @@ function GenreBrowse({ onPlay, onInfo, myList, onToggleList }: {
 
 // ── Main Page ──────────────────────────────────────────────────────
 export default function Home() {
+  const [showIntro,     setShowIntro]     = useState(true);
   const [playingMovie,  setPlayingMovie]  = useState<Movie | null>(null);
   const [modalMovie,    setModalMovie]    = useState<Movie | null>(null);
   const [myList,        setMyList]        = useState<number[]>([]);
@@ -428,6 +430,8 @@ export default function Home() {
   const heroInList = myList.includes(HERO.id);
 
   return (
+    <>
+      {showIntro && <HackerIntro onDone={() => setShowIntro(false)} />}
     <main style={{ minHeight: "100vh", background: "#0a0a0a", color: "white" }}>
       <Navbar onMovieSelect={handleInfo} />
 
@@ -548,5 +552,6 @@ export default function Home() {
       )}
       <Toast msg={toast.msg} show={toast.show} />
     </main>
+    </>
   );
 }
