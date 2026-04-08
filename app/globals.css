@@ -1,27 +1,150 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
 @theme {
-  --color-netflix-red: #E50914;
-  --color-netflix-black: #141414;
-  --color-netflix-dark: #181818;
+  --color-nb-red: #E50914;
+  --color-nb-red-dark: #b20710;
+  --color-nb-black: #141414;
+  --color-nb-dark: #181818;
+  --color-nb-card: #1f1f1f;
+  --color-nb-gray: #808080;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Barlow', sans-serif;
 }
 
 :root {
-  background-color: var(--color-netflix-black);
+  background-color: var(--color-nb-black);
   color: white;
+  font-family: var(--font-body);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  background-color: #141414;
 }
 
-/* Хэвтээ scrollbar-ийг нуух (Гэхдээ scroll хийгдэнэ) */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+/* ─── Scrollbar hide ─── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ─── Navbar scroll effect (JS class toggle) ─── */
+.nav-scrolled {
+  background-color: #141414 !important;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.8);
 }
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+
+/* ─── Movie card hover overlay ─── */
+.movie-card {
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, z-index 0s;
+  flex-shrink: 0;
+}
+
+.movie-card:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+  z-index: 30;
+}
+
+.movie-card .card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 10px;
+}
+
+.movie-card:hover .card-overlay {
+  opacity: 1;
+}
+
+/* ─── Top 10 number overlay ─── */
+.top10-number {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 3px white;
+  text-stroke: 3px white;
+  position: absolute;
+  bottom: -4px;
+  left: -10px;
+  z-index: 10;
+  text-shadow: -3px 0 #000, 0 3px #000, 3px 0 #000, 0 -3px #000;
+  pointer-events: none;
+}
+
+/* ─── Hero animations ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-title {
+  animation: fadeUp 0.7s ease forwards;
+  animation-delay: 0.1s;
+  opacity: 0;
+}
+.hero-desc {
+  animation: fadeUp 0.7s ease forwards;
+  animation-delay: 0.3s;
+  opacity: 0;
+}
+.hero-btns {
+  animation: fadeUp 0.7s ease forwards;
+  animation-delay: 0.5s;
+  opacity: 0;
+}
+
+/* ─── Row fade-in on scroll ─── */
+@keyframes rowReveal {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.row-section {
+  animation: rowReveal 0.6s ease forwards;
+}
+
+/* ─── Play button pulse ─── */
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+  50%       { box-shadow: 0 0 0 8px rgba(255,255,255,0); }
+}
+.btn-play:hover { animation: pulse 1s infinite; }
+
+/* ─── Featured badge ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, var(--color-nb-red), #ff6b35);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 3px;
+  margin-bottom: 12px;
+}
+
+/* ─── Genre pill ─── */
+.genre-dot::before {
+  content: '•';
+  margin: 0 6px;
+  color: var(--color-nb-red);
 }
