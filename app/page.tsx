@@ -4,7 +4,6 @@ import Image from "next/image";
 import { useState, useCallback, useEffect } from "react";
 import { Play, Info, Plus, ThumbsUp, ChevronDown, X, Check, ArrowLeft, Compass } from "lucide-react";
 import Navbar from "@/components/Navbar";
-import HackerIntro from "@/components/HackerIntro";
 import DiscoverFeed from "@/components/DiscoverFeed";
 import moviesData from "@/lib/movies.json";
 
@@ -350,7 +349,6 @@ function GenreBrowse({ onPlay, onInfo, myList, onToggleList }: {
 
 // ── Main Page ──────────────────────────────────────────────────────
 export default function Home() {
-  const [showIntro,     setShowIntro]     = useState(true);
   const [playingMovie,  setPlayingMovie]  = useState<Movie | null>(null);
   const [modalMovie,    setModalMovie]    = useState<Movie | null>(null);
   const [myList,        setMyList]        = useState<number[]>([]);
@@ -423,7 +421,6 @@ export default function Home() {
 
   return (
     <>
-      {showIntro && <HackerIntro onDone={() => setShowIntro(false)} />}
       <main style={{ minHeight:"100vh", background:"#0a0a0a", color:"white", position:"relative" }}>
 
         {/* ── Ambient Glow — hero зурагнаас өнгө авна ── */}
@@ -436,7 +433,7 @@ export default function Home() {
         <Navbar onMovieSelect={handleInfo} />
 
         {/* ── Hero ── */}
-        <section style={{ position:"relative", height:"100vh", width:"100%", overflow:"hidden" }}>
+        <section id="hero-section" style={{ position:"relative", height:"100vh", width:"100%", overflow:"hidden" }}>
           {heroBg && (
             <div className="hero-image-wrap" style={{ position:"absolute", inset:0 }}>
               <Image src={heroBg} alt={HERO.title} fill priority className="object-cover"
@@ -509,17 +506,23 @@ export default function Home() {
 
         {/* ── Content rows ── */}
         <div style={{ marginTop:-80, position:"relative", zIndex:20, paddingBottom:60, overflow:"visible" }}>
-          <MyListRow myList={myList} onPlay={handlePlay} onInfo={handleInfo} onToggleList={handleToggleList} />
+          <div id="mylist-section">
+            <MyListRow myList={myList} onPlay={handlePlay} onInfo={handleInfo} onToggleList={handleToggleList} />
+          </div>
 
           <ContinueWatchingRow watchProgress={watchProgress} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} />
 
-          <MovieRow label="Одоо" title="Трэнд байгаа" movies={TRENDING}
-            onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
+          <div id="trending-section">
+            <MovieRow label="Одоо" title="Трэнд байгаа" movies={TRENDING}
+              onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
+          </div>
 
           <Top10Row list={TOP10} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} />
 
-          <MovieRow label="Саяхан" title="Шинэ нэмэгдсэн" movies={NEW_MOVIES} wide
-            onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
+          <div id="new-section">
+            <MovieRow label="Саяхан" title="Шинэ нэмэгдсэн" movies={NEW_MOVIES} wide
+              onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
+          </div>
 
           <MovieRow label="Жанр" title="Экшн" movies={ACTION}
             onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
@@ -536,7 +539,9 @@ export default function Home() {
           <MovieRow label="Алдартай" title="Их үзэлттэй" movies={POPULAR}
             onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
 
-          <GenreBrowse onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} />
+          <div id="genre-section">
+            <GenreBrowse onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} />
+          </div>
         </div>
 
         {playingMovie && <VideoPlayer movie={playingMovie} onClose={handleClosePlayer} />}
