@@ -6,11 +6,14 @@ import type { Movie } from "@/types/movie";
 export function MovieRow({
   label, title, movies: list, wide = false,
   onPlay, onInfo, myList, onToggleList, progress,
+  onHoverColor, onHoverEnd,
 }: {
   label?: string; title: string; movies: Movie[]; wide?: boolean;
   onPlay: (m: Movie) => void; onInfo: (m: Movie) => void;
   myList: number[]; onToggleList: (m: Movie) => void;
   progress?: Record<number, number>;
+  onHoverColor?: (src: string) => void;
+  onHoverEnd?: () => void;
 }) {
   if (!list.length) return null;
   return (
@@ -24,6 +27,8 @@ export function MovieRow({
             onPlay={onPlay} onInfo={onInfo}
             myList={myList} onToggleList={onToggleList}
             progress={progress?.[m.id]}
+            onHoverColor={onHoverColor}
+            onHoverEnd={onHoverEnd}
           />
         ))}
       </div>

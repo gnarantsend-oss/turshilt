@@ -1024,3 +1024,29 @@ body {
 /* ── Main layout ── */
 .page-main { min-height: 100vh; background: #0a0a0a; color: white; position: relative; }
 .content-rows { margin-top: -80px; position: relative; z-index: 20; padding-bottom: 60px; overflow: visible; }
+
+/* ── Philips Ambilight — динамик өнгөт гэрэлтүүлэг ──────────────── */
+.ambient-dynamic-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+
+  /* Өнгийг CSS variable-ээр авна */
+  background: radial-gradient(
+    ellipse 120% 80% at 50% 0%,
+    var(--ambient-color, rgba(0,0,0,0)) 0%,
+    transparent 70%
+  );
+
+  /* Зөөлөн transition — 0.8s-д аажмаар солигдоно */
+  transition:
+    opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+    background 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Дараагийн давхаргуудыг бүү дар */
+  mix-blend-mode: screen;
+}
+
+/* Navbar болон бусад элементүүд z-index нь layer-аас дээгүүр байх ёстой */
+nav { z-index: 50 !important; }

@@ -7,16 +7,24 @@ import type { Movie } from "@/types/movie";
 
 export function MovieCard({
   movie, wide = false, onPlay, onInfo, myList, onToggleList, progress,
+  onHoverColor, onHoverEnd,
 }: {
   movie: Movie; wide?: boolean;
   onPlay: (m: Movie) => void; onInfo: (m: Movie) => void;
   myList: number[]; onToggleList: (m: Movie) => void;
   progress?: number;
+  // Ambient glow callbacks — optional, parent-аас дамжуулна
+  onHoverColor?: (src: string) => void;
+  onHoverEnd?: () => void;
 }) {
   const imgSrc = movie.poster || movie.banner;
 
   return (
-    <div className={`movie-card ${wide ? "movie-card-wide" : "movie-card-normal"}`}>
+    <div
+      className={`movie-card ${wide ? "movie-card-wide" : "movie-card-normal"}`}
+      onMouseEnter={() => imgSrc && onHoverColor?.(imgSrc)}
+      onMouseLeave={() => onHoverEnd?.()}
+    >
       <div className="movie-card-inner">
         <motion.div
           layoutId={`movie-img-${movie.id}`}

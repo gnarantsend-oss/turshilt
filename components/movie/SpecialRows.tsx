@@ -7,12 +7,17 @@ import moviesData from "@/lib/movies.json";
 
 const movies = moviesData as Movie[];
 
+type AmbientProps = {
+  onHoverColor?: (src: string) => void;
+  onHoverEnd?: () => void;
+};
+
 // ── Continue Watching ──────────────────────────────────────────────
-export function ContinueWatchingRow({ watchProgress, onPlay, onInfo, myList, onToggleList }: {
+export function ContinueWatchingRow({ watchProgress, onPlay, onInfo, myList, onToggleList, onHoverColor, onHoverEnd }: {
   watchProgress: Record<number, number>;
   onPlay: (m: Movie) => void; onInfo: (m: Movie) => void;
   myList: number[]; onToggleList: (m: Movie) => void;
-}) {
+} & AmbientProps) {
   const continueMovies = movies.filter(
     m => watchProgress[m.id] != null && watchProgress[m.id] > 0 && watchProgress[m.id] < 95
   );
@@ -31,6 +36,7 @@ export function ContinueWatchingRow({ watchProgress, onPlay, onInfo, myList, onT
             onPlay={onPlay} onInfo={onInfo}
             myList={myList} onToggleList={onToggleList}
             progress={watchProgress[m.id]}
+            onHoverColor={onHoverColor} onHoverEnd={onHoverEnd}
           />
         ))}
       </div>
@@ -39,10 +45,10 @@ export function ContinueWatchingRow({ watchProgress, onPlay, onInfo, myList, onT
 }
 
 // ── Top 10 ─────────────────────────────────────────────────────────
-export function Top10Row({ list, onPlay, onInfo, myList, onToggleList }: {
+export function Top10Row({ list, onPlay, onInfo, myList, onToggleList, onHoverColor, onHoverEnd }: {
   list: Movie[]; onPlay: (m: Movie) => void; onInfo: (m: Movie) => void;
   myList: number[]; onToggleList: (m: Movie) => void;
-}) {
+} & AmbientProps) {
   if (!list.length) return null;
   return (
     <section className="row-section">
@@ -54,7 +60,10 @@ export function Top10Row({ list, onPlay, onInfo, myList, onToggleList }: {
           <div key={m.id} className="top10-item">
             <span className="top10-num">{i + 1}</span>
             <div className="top10-card">
-              <MovieCard movie={m} onPlay={onPlay} onInfo={onInfo} myList={myList} onToggleList={onToggleList} />
+              <MovieCard movie={m} onPlay={onPlay} onInfo={onInfo}
+                myList={myList} onToggleList={onToggleList}
+                onHoverColor={onHoverColor} onHoverEnd={onHoverEnd}
+              />
             </div>
           </div>
         ))}
@@ -64,16 +73,17 @@ export function Top10Row({ list, onPlay, onInfo, myList, onToggleList }: {
 }
 
 // ── My List ────────────────────────────────────────────────────────
-export function MyListRow({ myList, onPlay, onInfo, onToggleList }: {
+export function MyListRow({ myList, onPlay, onInfo, onToggleList, onHoverColor, onHoverEnd }: {
   myList: number[]; onPlay: (m: Movie) => void;
   onInfo: (m: Movie) => void; onToggleList: (m: Movie) => void;
-}) {
+} & AmbientProps) {
   const listMovies = movies.filter(m => myList.includes(m.id));
   if (!listMovies.length) return null;
   return (
     <MovieRow label="Хадгалсан" title="Миний жагсаалт"
       movies={listMovies} onPlay={onPlay} onInfo={onInfo}
       myList={myList} onToggleList={onToggleList}
+      onHoverColor={onHoverColor} onHoverEnd={onHoverEnd}
     />
   );
 }

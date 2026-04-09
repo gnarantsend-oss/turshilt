@@ -13,6 +13,8 @@ import { MovieModal } from "@/components/movie/MovieModal";
 import { MovieRow } from "@/components/movie/MovieRow";
 import { GenreBrowse } from "@/components/movie/GenreBrowse";
 import { ContinueWatchingRow, Top10Row, MyListRow } from "@/components/movie/SpecialRows";
+import { AmbientGlowLayer } from "@/components/movie/AmbientGlowLayer";
+import { useAmbientColor } from "@/hooks/useAmbientColor";
 
 import type { Movie } from "@/types/movie";
 import moviesData from "@/lib/movies.json";
@@ -39,6 +41,15 @@ export default function Home() {
   const [watchProgress, setWatchProgress] = useState<Record<number, number>>({});
   const [isLoaded,      setIsLoaded]      = useState(false);
   const [showDiscover,  setShowDiscover]  = useState(false);
+
+  // ── Ambient Glow ──────────────────────────────────────────────────
+  const { color: ambientColor, setFromImage, scheduleReset, cancelReset } = useAmbientColor();
+
+  // Hero-ийн өнгийг mount хийхэд тохируулна
+  useEffect(() => {
+    const heroSrc = HERO.banner || HERO.poster;
+    if (heroSrc) setFromImage(heroSrc);
+  }, [setFromImage]);
 
   useEffect(() => {
     try {
@@ -93,12 +104,22 @@ export default function Home() {
     });
   }, [showToast]);
 
-  const heroBg    = HERO.banner || HERO.poster;
+  // Ambient callbacks — бүх row-д ижилхэн дамжуулна
+  const ambientProps = {
+    onHoverColor: (src: string) => { cancelReset(); setFromImage(src); },
+    onHoverEnd:   () => scheduleReset(),
+  };
+
+  const heroBg     = HERO.banner || HERO.poster;
   const heroInList = myList.includes(HERO.id);
 
   return (
     <>
       <main className="page-main">
+        {/* ── Philips Ambilight динамик өнгөт гэрэлтүүлэг ── */}
+        <AmbientGlowLayer color={ambientColor} />
+
+        {/* ── Анхны Hero ambient (blur зураг) ── */}
         {heroBg && (
           <div className="ambient-glow-container" aria-hidden>
             <div className="ambient-glow-blob" style={{ backgroundImage: `url(${heroBg})` }} />
@@ -108,7 +129,12 @@ export default function Home() {
         <Navbar onMovieSelect={handleInfo} />
 
         {/* ── Hero ── */}
-        <section id="hero-section" className="hero-section">
+        <section
+          id="hero-section"
+          className="hero-section"
+          onMouseEnter={() => { cancelReset(); setFromImage(heroBg); }}
+          onMouseLeave={() => scheduleReset()}
+        >
           {heroBg && (
             <div className="hero-image-wrap" style={{ position: "absolute", inset: 0 }}>
               <Image src={heroBg} alt={HERO.title} fill priority className="object-cover"
@@ -124,13 +150,14 @@ export default function Home() {
               <div className="hero-eyebrow-line" />
               <span className="hero-eyebrow-text">Онцлох кино</span>
             </div>
-
-            <h1 className="hero-title" style={{ fontFamily: "'Bebas Neue', sans-serif",
-              fontSize: "clamp(3.5rem, 8vw, 6.5rem)", lineHeight: 0.9,
-              letterSpacing: "0.03em", marginBottom: 20, textShadow: "0 4px 40px rgba(0,0,0,0.5)" }}>
+            <h1 className="hero-title" style={{
+              fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: "clamp(3.5rem, 8vw, 6.5rem)",
+              lineHeight: 0.9, letterSpacing: "0.03em",
+              marginBottom: 20, textShadow: "0 4px 40px rgba(0,0,0,0.5)",
+            }}>
               {HERO.title}
             </h1>
-
             <div className="hero-meta">
               <span className="hero-rating">★ {HERO.rating}</span>
               <span className="hero-meta-divider" />
@@ -142,16 +169,16 @@ export default function Home() {
                 </span>
               ))}
             </div>
-
             {HERO.overview && (
-              <p className="hero-overview"
-                style={{ fontSize: "0.95rem", lineHeight: 1.75, color: "rgba(255,255,255,0.7)",
-                  marginBottom: 28, display: "-webkit-box", WebkitLineClamp: 3,
-                  WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+              <p className="hero-overview" style={{
+                fontSize: "0.95rem", lineHeight: 1.75,
+                color: "rgba(255,255,255,0.7)", marginBottom: 28,
+                display: "-webkit-box", WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical", overflow: "hidden",
+              }}>
                 {HERO.overview}
               </p>
             )}
-
             <div className="hero-actions">
               <button className="btn-primary" onClick={() => handlePlay(HERO)}>
                 <Play fill="#0a0a0a" size={18} /> Тоглуулах
@@ -173,21 +200,21 @@ export default function Home() {
         {/* ── Content rows ── */}
         <div className="content-rows">
           <div id="mylist-section">
-            <MyListRow myList={myList} onPlay={handlePlay} onInfo={handleInfo} onToggleList={handleToggleList} />
+            <MyListRow myList={myList} onPlay={handlePlay} onInfo={handleInfo} onToggleList={handleToggleList} {...ambientProps} />
           </div>
-          <ContinueWatchingRow watchProgress={watchProgress} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} />
+          <ContinueWatchingRow watchProgress={watchProgress} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} {...ambientProps} />
           <div id="trending-section">
-            <MovieRow label="Одоо" title="Трэнд байгаа" movies={TRENDING} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
+            <MovieRow label="Одоо" title="Трэнд байгаа" movies={TRENDING} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} {...ambientProps} />
           </div>
-          <Top10Row list={TOP10} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} />
+          <Top10Row list={TOP10} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} {...ambientProps} />
           <div id="new-section">
-            <MovieRow label="Саяхан" title="Шинэ нэмэгдсэн" movies={NEW_MOVIES} wide onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
+            <MovieRow label="Саяхан" title="Шинэ нэмэгдсэн" movies={NEW_MOVIES} wide onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} {...ambientProps} />
           </div>
-          <MovieRow label="Жанр" title="Экшн"    movies={ACTION}   onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
-          <MovieRow label="Жанр" title="Аймшиг"  movies={HORROR}   wide onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
-          <MovieRow label="Жанр" title="Драм"    movies={DRAMA}    onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
-          <MovieRow label="Жанр" title="Триллер" movies={THRILLER} wide onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
-          <MovieRow label="Алдартай" title="Их үзэлттэй" movies={POPULAR} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
+          <MovieRow label="Жанр" title="Экшн"    movies={ACTION}   onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} {...ambientProps} />
+          <MovieRow label="Жанр" title="Аймшиг"  movies={HORROR}   wide onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} {...ambientProps} />
+          <MovieRow label="Жанр" title="Драм"    movies={DRAMA}    onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} {...ambientProps} />
+          <MovieRow label="Жанр" title="Триллер" movies={THRILLER} wide onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} {...ambientProps} />
+          <MovieRow label="Алдартай" title="Их үзэлттэй" movies={POPULAR} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} {...ambientProps} />
           <div id="genre-section">
             <GenreBrowse onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} />
           </div>
