@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { Search, Bell, X, Menu, List } from "lucide-react";
 import moviesData from "@/lib/movies.json";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
@@ -30,12 +30,12 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }:NavbarPro
       <div className="flex items-center gap-4 text-gray-300">
         <button onClick={()=>setSearchOpen(true)} className="hover:text-white flex items-center gap-2"><Search size={20}/><span className="hidden md:flex text-[10px] opacity-30 border border-white/20 px-1.5 py-0.5 rounded-md font-mono">⌘K</span></button>
         <button className="hidden md:flex hover:text-white relative" onClick={()=>alert("Шинэ мэдэгдэл байхгүй")}><Bell size={20}/><span className="absolute -top-1 -right-1 w-2 h-2 bg-[#E50914] rounded-full"/></button>
-        <button className="hidden md:flex items-center gap-2 cursor-pointer" onClick={()=>scrollTo("mylist-section")}><div className="w-8 h-8 rounded bg-[#E50914] flex items-center justify-center text-sm font-bold text-white">Н</div></button>
+        <button className="hidden md:flex items-center gap-2" onClick={()=>scrollTo("mylist-section")}><div className="w-8 h-8 rounded bg-[#E50914] flex items-center justify-center text-sm font-bold text-white">Н</div></button>
         <button className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg hover:bg-white/10" onClick={()=>setMobileOpen(s=>!s)}>{mobileOpen?<X size={20} className="text-white"/>:<Menu size={20} className="text-gray-300"/>}</button>
       </div>
     </nav>
-    {mobileOpen&&(<><div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden" onClick={()=>setMobileOpen(false)}/>
-      <div className="fixed top-0 right-0 h-full w-72 z-50 md:hidden flex flex-col" style={{background:"rgba(14,14,14,0.97)",backdropFilter:"blur(24px)",borderLeft:"1px solid rgba(255,255,255,0.07)"}}>
+    {mobileOpen&&(<><div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm" onClick={()=>setMobileOpen(false)}/>
+      <div className="fixed top-0 right-0 h-full w-72 z-50 flex flex-col" style={{background:"rgba(14,14,14,0.97)",backdropFilter:"blur(24px)",borderLeft:"1px solid rgba(255,255,255,0.07)"}}>
         <div className="flex items-center justify-between px-6 py-5" style={{borderBottom:"1px solid rgba(255,255,255,0.07)"}}>
           <span style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:"1.6rem",color:"#E50914"}}>NABO</span>
           <button onClick={()=>setMobileOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-gray-400"><X size={18}/></button>
@@ -52,13 +52,7 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }:NavbarPro
         <input id="search-input" className="search-input" placeholder="Кино, цуврал хайх..." value={searchQ} onChange={e=>{setSearchQ(e.target.value);onSearch?.(e.target.value);}}/>
         <button className="search-close-btn" onClick={()=>setSearchOpen(false)}><X size={20}/></button>
       </div>
-      {searchQ.trim().length>1&&(<div className="search-results scrollbar-hide">
-        {results.length===0?(<div className="search-empty" style={{gridColumn:"1/-1"}}>"{searchQ}" — олдсонгүй</div>):results.map(m=>(<div key={m.id} className="search-result-card" onClick={()=>{onMovieSelect?.(m);setSearchOpen(false);}}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={m.poster||m.banner} alt={m.title} style={{width:"100%",height:110,objectFit:"cover",display:"block"}}/>
-          <div className="search-result-info"><div>{m.title}</div><div style={{fontSize:"0.7rem",color:"#46d369"}}>★ {m.rating}</div></div>
-        </div>))}
-      </div>)}
+      {searchQ.trim().length>1&&(<div className="search-results scrollbar-hide">{results.length===0?(<div className="search-empty" style={{gridColumn:"1/-1"}}>"{searchQ}" — олдсонгүй</div>):results.map(m=>(<div key={m.id} className="search-result-card" onClick={()=>{onMovieSelect?.(m);setSearchOpen(false);}}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={m.poster||m.banner} alt={m.title} style={{width:"100%",height:110,objectFit:"cover",display:"block"}}/><div className="search-result-info"><div>{m.title}</div><div style={{fontSize:"0.7rem",color:"#46d369"}}>★ {m.rating}</div></div></div>))}</div>)}
       {searchQ.trim().length===0&&<div className="search-empty">Хайх гарчгаа бичнэ үү...</div>}
     </div>)}
   </>);
