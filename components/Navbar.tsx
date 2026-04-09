@@ -84,7 +84,6 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
             {navLinks.map(({ label, id }) => (
               <button key={id} onClick={() => scrollTo(id)} className={`hover:text-white transition-colors bg-transparent border-none cursor-pointer font-medium text-sm ${activeNav === id ? "text-white font-semibold" : "text-gray-300"}`} style={{ fontFamily:"'Barlow',sans-serif" }}>{label}</button>
-            ))}
           </div>
         </div>
         <div className="flex items-center gap-4 text-gray-300">
