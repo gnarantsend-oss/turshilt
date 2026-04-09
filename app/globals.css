@@ -936,3 +936,91 @@ body {
     bottom: 12% !important; left: 16px !important; right: 16px !important; max-width: 100% !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   🧩 REFACTORED — inline style-уудыг класс болгон хөрвүүлсэн
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Hero overlays ── */
+.hero-section {
+  position: relative; height: 100vh; width: 100%; overflow: hidden;
+}
+.hero-overlay-main {
+  position: absolute; inset: 0;
+  background: linear-gradient(105deg, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.5) 50%, rgba(10,10,10,0.1) 100%);
+}
+.hero-overlay-bottom {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, #0a0a0a 0%, transparent 40%);
+}
+.hero-overlay-top {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(10,10,10,0.4) 0%, transparent 20%);
+}
+.hero-content {
+  position: absolute; bottom: 18%; left: 40px;
+  max-width: 560px; z-index: 10;
+}
+.hero-eyebrow-line {
+  width: 28px; height: 2px;
+  background: #C9A84C; border-radius: 2px; flex-shrink: 0;
+}
+.hero-eyebrow-text {
+  font-size: 0.65rem; letter-spacing: 0.25em;
+  text-transform: uppercase; color: #C9A84C; font-weight: 600;
+}
+.hero-rating {
+  color: #C9A84C; font-weight: 700; font-size: 0.95rem;
+}
+.hero-meta-divider {
+  width: 1px; height: 14px; background: rgba(255,255,255,0.2); flex-shrink: 0;
+}
+.hero-hd-badge {
+  border: 1px solid rgba(255,255,255,0.25);
+  padding: 2px 8px; font-size: 0.7rem;
+  border-radius: 3px; color: rgba(255,255,255,0.6);
+}
+.hero-genre-text {
+  color: rgba(255,255,255,0.55); font-size: 0.85rem;
+}
+.hero-genre-dot {
+  margin-right: 8px; color: rgba(255,255,255,0.2);
+}
+
+/* ── Movie card variants ── */
+.movie-card-wide   { min-width: 280px; height: 160px; }
+.movie-card-normal { min-width: 145px; height: 210px; }
+.card-empty {
+  width: 100%; height: 100%; background: #1a1a1a;
+  display: flex; align-items: center; justify-content: center; padding: 8px;
+}
+.card-empty-text {
+  color: rgba(255,255,255,0.3); font-size: 0.75rem; text-align: center;
+}
+
+/* ── Rows & sections ── */
+.row-section  { padding: 0 40px 32px; overflow: visible; }
+.row-scroll   {
+  display: flex; gap: 12px; overflow-x: auto;
+  padding-bottom: 16px; padding-top: 4px; overflow: visible;
+}
+.row-scroll-tight { gap: 4px; padding-top: 8px; }
+
+/* ── Top 10 ── */
+.top10-item   { position: relative; display: flex; align-items: flex-end; flex-shrink: 0; }
+.top10-card   { margin-left: 40px; }
+
+/* ── Modal meta ── */
+.modal-hd-badge {
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 4px 8px; font-size: 0.7rem;
+  color: rgba(255,255,255,0.5); border-radius: 3px;
+}
+.modal-actions-end { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+/* ── Genre section ── */
+.genre-section { padding: 0 40px 40px; overflow: visible; }
+
+/* ── Main layout ── */
+.page-main { min-height: 100vh; background: #0a0a0a; color: white; position: relative; }
+.content-rows { margin-top: -80px; position: relative; z-index: 20; padding-bottom: 60px; overflow: visible; }

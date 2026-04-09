@@ -18,8 +18,8 @@ import type { Movie } from "@/types/movie";
 import moviesData from "@/lib/movies.json";
 
 const movies = moviesData as Movie[];
-const byTag = (tag: string) => movies.filter((m) => m.tags.includes(tag));
-const byGenre = (name: string) => movies.filter((m) => m.genre.some((g) => g.name === name));
+const byTag   = (tag: string)  => movies.filter(m => m.tags.includes(tag));
+const byGenre = (name: string) => movies.filter(m => m.genre.some(g => g.name === name));
 
 const HERO       = byTag("trending")[0] ?? movies[0];
 const TRENDING   = byTag("trending").slice(0, 14);
@@ -57,7 +57,7 @@ export default function Home() {
 
   const showToast = useCallback((msg: string) => {
     setToast({ msg, show: true });
-    setTimeout(() => setToast((t) => ({ ...t, show: false })), 2500);
+    setTimeout(() => setToast(t => ({ ...t, show: false })), 2500);
   }, []);
 
   const handlePlay = useCallback((m: Movie) => {
@@ -68,7 +68,7 @@ export default function Home() {
   const handleClosePlayer = useCallback(() => {
     if (playingMovie) {
       const prog = Math.floor(Math.random() * 60) + 20;
-      setWatchProgress((prev) => {
+      setWatchProgress(prev => {
         const next = { ...prev, [playingMovie.id]: prog };
         try { localStorage.setItem("nabo_progress", JSON.stringify(next)); } catch { /* ignore */ }
         return next;
@@ -82,28 +82,23 @@ export default function Home() {
     const open = () => setModalMovie(m);
     if (typeof document !== "undefined" && "startViewTransition" in document) {
       (document as unknown as { startViewTransition: (cb: () => void) => void }).startViewTransition(open);
-    } else {
-      open();
-    }
+    } else { open(); }
   }, []);
 
   const handleToggleList = useCallback((m: Movie) => {
-    setMyList((prev) => {
-      if (prev.includes(m.id)) {
-        showToast(`"${m.title}" хасагдлаа`);
-        return prev.filter((id) => id !== m.id);
-      }
+    setMyList(prev => {
+      if (prev.includes(m.id)) { showToast(`"${m.title}" хасагдлаа`); return prev.filter(id => id !== m.id); }
       showToast(`"${m.title}" нэмэгдлээ ✓`);
       return [...prev, m.id];
     });
   }, [showToast]);
 
-  const heroBg = HERO.banner || HERO.poster;
+  const heroBg    = HERO.banner || HERO.poster;
   const heroInList = myList.includes(HERO.id);
 
   return (
     <>
-      <main style={{ minHeight: "100vh", background: "#0a0a0a", color: "white", position: "relative" }}>
+      <main className="page-main">
         {heroBg && (
           <div className="ambient-glow-container" aria-hidden>
             <div className="ambient-glow-blob" style={{ backgroundImage: `url(${heroBg})` }} />
@@ -112,56 +107,71 @@ export default function Home() {
 
         <Navbar onMovieSelect={handleInfo} />
 
-        {/* Hero */}
-        <section id="hero-section" style={{ position: "relative", height: "100vh", width: "100%", overflow: "hidden" }}>
+        {/* ── Hero ── */}
+        <section id="hero-section" className="hero-section">
           {heroBg && (
             <div className="hero-image-wrap" style={{ position: "absolute", inset: 0 }}>
-              <Image src={heroBg} alt={HERO.title} fill priority className="object-cover" style={{ objectPosition: "center 20%" }} sizes="100vw" />
+              <Image src={heroBg} alt={HERO.title} fill priority className="object-cover"
+                style={{ objectPosition: "center 20%" }} sizes="100vw" />
             </div>
           )}
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(105deg, rgba(10,10,10,0.95) 0%, rgba(10,10,10,0.5) 50%, rgba(10,10,10,0.1) 100%)" }} />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #0a0a0a 0%, transparent 40%)" }} />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,10,10,0.4) 0%, transparent 20%)" }} />
+          <div className="hero-overlay-main" />
+          <div className="hero-overlay-bottom" />
+          <div className="hero-overlay-top" />
 
-          <div style={{ position: "absolute", bottom: "18%", left: 40, maxWidth: 560, zIndex: 10 }}>
-            <div className="hero-eyebrow" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
-              <div style={{ width: 28, height: 2, background: "#C9A84C", borderRadius: 2 }} />
-              <span style={{ fontSize: "0.65rem", letterSpacing: "0.25em", textTransform: "uppercase", color: "#C9A84C", fontWeight: 600 }}>
-                Онцлох кино
-              </span>
+          <div className="hero-content">
+            <div className="hero-eyebrow">
+              <div className="hero-eyebrow-line" />
+              <span className="hero-eyebrow-text">Онцлох кино</span>
             </div>
-            <h1 className="hero-title" style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(3.5rem, 8vw, 6.5rem)", lineHeight: 0.9, letterSpacing: "0.03em", marginBottom: 20, textShadow: "0 4px 40px rgba(0,0,0,0.5)" }}>
+
+            <h1 className="hero-title" style={{ fontFamily: "'Bebas Neue', sans-serif",
+              fontSize: "clamp(3.5rem, 8vw, 6.5rem)", lineHeight: 0.9,
+              letterSpacing: "0.03em", marginBottom: 20, textShadow: "0 4px 40px rgba(0,0,0,0.5)" }}>
               {HERO.title}
             </h1>
-            <div className="hero-meta" style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
-              <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: "0.95rem" }}>★ {HERO.rating}</span>
-              <span style={{ width: 1, height: 14, background: "rgba(255,255,255,0.2)" }} />
-              <span style={{ border: "1px solid rgba(255,255,255,0.25)", padding: "2px 8px", fontSize: "0.7rem", borderRadius: 3, color: "rgba(255,255,255,0.6)" }}>HD</span>
+
+            <div className="hero-meta">
+              <span className="hero-rating">★ {HERO.rating}</span>
+              <span className="hero-meta-divider" />
+              <span className="hero-hd-badge">HD</span>
               {HERO.genre.slice(0, 3).map((g, i) => (
-                <span key={g.id} style={{ color: "rgba(255,255,255,0.55)", fontSize: "0.85rem" }}>
-                  {i > 0 && <span style={{ marginRight: 8, color: "rgba(255,255,255,0.2)" }}>·</span>}
+                <span key={g.id} className="hero-genre-text">
+                  {i > 0 && <span className="hero-genre-dot">·</span>}
                   {g.name}
                 </span>
               ))}
             </div>
+
             {HERO.overview && (
-              <p className="hero-overview" style={{ fontSize: "0.95rem", lineHeight: 1.75, color: "rgba(255,255,255,0.7)", marginBottom: 28, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+              <p className="hero-overview"
+                style={{ fontSize: "0.95rem", lineHeight: 1.75, color: "rgba(255,255,255,0.7)",
+                  marginBottom: 28, display: "-webkit-box", WebkitLineClamp: 3,
+                  WebkitBoxOrient: "vertical", overflow: "hidden" }}>
                 {HERO.overview}
               </p>
             )}
-            <div className="hero-actions" style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-              <button className="btn-primary" onClick={() => handlePlay(HERO)}><Play fill="#0a0a0a" size={18} /> Тоглуулах</button>
-              <button className="btn-ghost" onClick={() => handleInfo(HERO)}><Info size={18} /> Дэлгэрэнгүй</button>
-              <button className="btn-circle" onClick={() => handleToggleList(HERO)} title={heroInList ? "Жагсаалтаас хасах" : "Жагсаалтад нэмэх"} style={{ marginLeft: 4 }}>
+
+            <div className="hero-actions">
+              <button className="btn-primary" onClick={() => handlePlay(HERO)}>
+                <Play fill="#0a0a0a" size={18} /> Тоглуулах
+              </button>
+              <button className="btn-ghost" onClick={() => handleInfo(HERO)}>
+                <Info size={18} /> Дэлгэрэнгүй
+              </button>
+              <button className="btn-circle" onClick={() => handleToggleList(HERO)}
+                title={heroInList ? "Жагсаалтаас хасах" : "Жагсаалтад нэмэх"}>
                 {heroInList ? <Check size={17} /> : <Plus size={17} />}
               </button>
-              <button className="btn-discover" onClick={() => setShowDiscover(true)}><Compass size={16} /> Нээн олох</button>
+              <button className="btn-discover" onClick={() => setShowDiscover(true)}>
+                <Compass size={16} /> Нээн олох
+              </button>
             </div>
           </div>
         </section>
 
-        {/* Content rows */}
-        <div style={{ marginTop: -80, position: "relative", zIndex: 20, paddingBottom: 60, overflow: "visible" }}>
+        {/* ── Content rows ── */}
+        <div className="content-rows">
           <div id="mylist-section">
             <MyListRow myList={myList} onPlay={handlePlay} onInfo={handleInfo} onToggleList={handleToggleList} />
           </div>
@@ -173,9 +183,9 @@ export default function Home() {
           <div id="new-section">
             <MovieRow label="Саяхан" title="Шинэ нэмэгдсэн" movies={NEW_MOVIES} wide onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
           </div>
-          <MovieRow label="Жанр" title="Экшн" movies={ACTION} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
-          <MovieRow label="Жанр" title="Аймшиг" movies={HORROR} wide onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
-          <MovieRow label="Жанр" title="Драм" movies={DRAMA} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
+          <MovieRow label="Жанр" title="Экшн"    movies={ACTION}   onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
+          <MovieRow label="Жанр" title="Аймшиг"  movies={HORROR}   wide onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
+          <MovieRow label="Жанр" title="Драм"    movies={DRAMA}    onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
           <MovieRow label="Жанр" title="Триллер" movies={THRILLER} wide onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
           <MovieRow label="Алдартай" title="Их үзэлттэй" movies={POPULAR} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} progress={watchProgress} />
           <div id="genre-section">
@@ -186,13 +196,15 @@ export default function Home() {
         {playingMovie && <VideoPlayer movie={playingMovie} onClose={handleClosePlayer} />}
         <AnimatePresence>
           {modalMovie && (
-            <MovieModal key={modalMovie.id} movie={modalMovie} onClose={() => setModalMovie(null)} onPlay={handlePlay} myList={myList} onToggleList={handleToggleList} />
+            <MovieModal key={modalMovie.id} movie={modalMovie} onClose={() => setModalMovie(null)}
+              onPlay={handlePlay} myList={myList} onToggleList={handleToggleList} />
           )}
         </AnimatePresence>
         {showDiscover && (
           <DiscoverFeed
-            movies={[...TRENDING, ...POPULAR, ...NEW_MOVIES].filter((m, i, arr) => arr.findIndex((x) => x.id === m.id) === i)}
-            onClose={() => setShowDiscover(false)} onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList}
+            movies={[...TRENDING, ...POPULAR, ...NEW_MOVIES].filter((m, i, arr) => arr.findIndex(x => x.id === m.id) === i)}
+            onClose={() => setShowDiscover(false)} onPlay={handlePlay} onInfo={handleInfo}
+            myList={myList} onToggleList={handleToggleList}
           />
         )}
         <Toast msg={toast.msg} show={toast.show} />
