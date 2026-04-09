@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { Search, Bell, ChevronDown, X, LogOut, User, List, Menu } from "lucide-react";
 import { useSession, signOut, signIn } from "next-auth/react";
 import moviesData from "@/lib/movies.json";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 type Movie = {
   id: number; title: string; poster: string; banner: string;
@@ -14,12 +15,13 @@ type Movie = {
 const movies = moviesData as Movie[];
 
 interface NavbarProps {
+  // onSearch: хайлтын query өөрчлөгдөх бүрт parent-д дамжуулна
   onSearch?: (query: string) => void;
   onMovieSelect?: (movie: Movie) => void;
   onNavClick?: (section: string) => void;
 }
 
-export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
+export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarProps) {
   const { data: session } = useSession();
   const [scrolled, setScrolled]       = useState(false);
   const [searchOpen, setSearchOpen]   = useState(false);
@@ -29,6 +31,10 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
   const [activeNav, setActiveNav]     = useState("hero-section");
   const profileRef = useRef<HTMLDivElement>(null);
 
+  // FIX: useBodyScrollLock — search overlay болон mobile drawer нээлттэй
+  // үед overflow-г hook-оор удирдана. Өмнөх useEffect-ийн шууд тавилтыг арилгав.
+  useBodyScrollLock(searchOpen || mobileOpen);
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -36,14 +42,9 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
   }, []);
 
   useEffect(() => {
-    if (searchOpen || mobileOpen) {
-      document.body.style.overflow = "hidden";
-      if (searchOpen) setTimeout(() => document.getElementById("search-input")?.focus(), 100);
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (searchOpen) setTimeout(() => document.getElementById("search-input")?.focus(), 100);
     if (!searchOpen) setSearchQ("");
-  }, [searchOpen, mobileOpen]);
+  }, [searchOpen]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -258,7 +259,7 @@ export default function Navbar({ onMovieSelect, onNavClick }: NavbarProps) {
         <div className="search-overlay" onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false); }}>
           <div className="search-input-wrap">
             <input id="search-input" className="search-input" placeholder="Кино, цуврал хайх..."
-              value={searchQ} onChange={e => setSearchQ(e.target.value)} />
+              value={searchQ} onChange={e => { setSearchQ(e.target.value); onSearch?.(e.target.value); }} />
             <div className="hidden md:flex items-center gap-1 text-xs text-white/20 font-mono mr-2">esc</div>
             <button className="search-close-btn" onClick={() => setSearchOpen(false)}>
               <X size={20} />

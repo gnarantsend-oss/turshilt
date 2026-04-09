@@ -13,14 +13,24 @@ import { getDb } from "@/lib/db";
  *   AUTH_GOOGLE_SECRET=...
  *   AUTH_GITHUB_ID=...
  *   AUTH_GITHUB_SECRET=...
+ *
+ * FIX: strategy-г adapter-тай уялдуулав.
+ * Өмнө нь strategy:"jwt" + DrizzleAdapter хамт байсан нь
+ * sessions DB-д хадгалагддаггүй байлаа (зөвхөн JWT cookie).
+ * Одоо adapter байвал "database", байхгүй бол "jwt" автоматаар сонгоно.
  */
 export const { handlers, auth, signIn, signOut } = NextAuth((req) => {
   // Edge runtime дотор env-ийн DB binding авах
   // @ts-expect-error – Cloudflare edge context
-  const env: CloudflareEnv = req?.cloudflare?.env ?? (globalThis as any).__cloudflareEnv;
+  const cfEnv: CloudflareEnv | undefined =
+    req?.cloudflare?.env ??
+    (globalThis as unknown as { __cloudflareEnv?: CloudflareEnv }).__cloudflareEnv;
+
+  // Cloudflare context байвал DB adapter идэвхжинэ
+  const db = cfEnv ? getDb(cfEnv) : undefined;
 
   return {
-    adapter: env ? DrizzleAdapter(getDb(env)) : undefined,
+    adapter: db ? DrizzleAdapter(db) : undefined,
 
     providers: [
       Google({
@@ -33,7 +43,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth((req) => {
       }),
     ],
 
-    session: { strategy: "jwt" },
+    // ЧУХАЛ: adapter байвал "database" (sessions DB-д хадгалагдана),
+    // байхгүй бол "jwt" (local dev болон edge-без-DB орчинд)
+    session: { strategy: db ? "database" : "jwt" },
 
     pages: {
       signIn:  "/login",
@@ -42,11 +54,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth((req) => {
 
     callbacks: {
       async jwt({ token, user }) {
+        // "database" strategy-д энэ callback дуудагдахгүй
         if (user) token.id = user.id;
         return token;
       },
-      async session({ session, token }) {
-        if (token.id) session.user.id = token.id as string;
+      async session({ session, token, user }) {
+        // "database" strategy-д `user` байна, "jwt"-д `token` байна
+        if (token?.id) session.user.id = token.id as string;
+        if (user?.id)  session.user.id = user.id;
         return session;
       },
     },

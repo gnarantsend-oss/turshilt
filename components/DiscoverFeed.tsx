@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { X, Play, Plus, Check, ThumbsUp, Info, Volume2, VolumeX, ChevronUp, ChevronDown } from "lucide-react";
 import Image from "next/image";
+import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
 type Movie = {
   id: number; title: string; overview: string;
@@ -27,10 +28,8 @@ export default function DiscoverFeed({ movies, onClose, onPlay, onInfo, myList, 
   const containerRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, []);
+  // FIX: useBodyScrollLock hook ашиглав — overflow conflict арилгасан
+  useBodyScrollLock(true);
 
   useEffect(() => {
     const h = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };

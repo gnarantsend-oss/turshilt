@@ -1,9 +1,23 @@
 /**
  * Зурагны хамгийн тод, хамгийн өнгөлөг өнгийг canvas ашиглан гаргаж авна.
  * Гадаад санг шаарддаггүй — зөвхөн browser Canvas API.
+ *
+ * FIX: Cache-ийн хэмжээг хязгаарлав (LRU-style).
+ * Өмнө нь module-level Map хязгааргүй өсдөг байсан нь олон зурагтай
+ * streaming platform дээр memory leak үүсгэдэг байлаа.
  */
 
+const CACHE_MAX = 100; // Хамгийн ихдээ 100 зургийн өнгө санах
 const cache = new Map<string, string>();
+
+function setCache(key: string, value: string) {
+  // Cache дүүрвэл хамгийн эртнийхийг устгана (Map insertion order)
+  if (cache.size >= CACHE_MAX) {
+    const firstKey = cache.keys().next().value;
+    if (firstKey !== undefined) cache.delete(firstKey);
+  }
+  cache.set(key, value);
+}
 
 export async function extractDominantColor(src: string): Promise<string | null> {
   if (cache.has(src)) return cache.get(src)!;
@@ -53,7 +67,7 @@ export async function extractDominantColor(src: string): Promise<string | null> 
         }
 
         const result = bestScore > 0.1 ? bestColor : null;
-        if (result) cache.set(src, result);
+        if (result) setCache(src, result); // cache.set-ийн оронд setCache ашиглана
         resolve(result);
       } catch {
         // CORS-аас болж canvas tainted болвол gracefully орхино
