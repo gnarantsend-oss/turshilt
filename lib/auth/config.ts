@@ -21,7 +21,6 @@ import { getDb } from "@/lib/db";
  */
 export const { handlers, auth, signIn, signOut } = NextAuth((req) => {
   // Edge runtime дотор env-ийн DB binding авах
-  // @ts-expect-error – Cloudflare edge context
   const cfEnv: CloudflareEnv | undefined =
     req?.cloudflare?.env ??
     (globalThis as unknown as { __cloudflareEnv?: CloudflareEnv }).__cloudflareEnv;
