@@ -21,8 +21,10 @@ import { getDb } from "@/lib/db";
  */
 export const { handlers, auth, signIn, signOut } = NextAuth((req) => {
   // Edge runtime дотор env-ийн DB binding авах
+  // NextRequest-д .cloudflare байхгүй тул type cast хийнэ
+  const cfReq = req as typeof req & { cloudflare?: { env: CloudflareEnv } };
   const cfEnv: CloudflareEnv | undefined =
-    req?.cloudflare?.env ??
+    cfReq?.cloudflare?.env ??
     (globalThis as unknown as { __cloudflareEnv?: CloudflareEnv }).__cloudflareEnv;
 
   // Cloudflare context байвал DB adapter идэвхжинэ
