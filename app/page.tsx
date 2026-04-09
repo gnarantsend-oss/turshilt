@@ -224,7 +224,7 @@ export default function Home() {
         <AnimatePresence>
           {modalMovie && (
             <MovieModal key={modalMovie.id} movie={modalMovie} onClose={() => setModalMovie(null)}
-              onPlay={handlePlay} myList={myList} onToggleList={handleToggleList} />
+              onPlay={handlePlay} onInfo={handleInfo} myList={myList} onToggleList={handleToggleList} />
           )}
         </AnimatePresence>
         {showDiscover && (
