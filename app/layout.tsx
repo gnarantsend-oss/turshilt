@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import SessionProviderWrapper from "@/components/SessionProviderWrapper";
 
 export const metadata: Metadata = {
   title: "NABO — Монголын Стриминг",
@@ -21,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="mn" className="h-full">
       <body className="min-h-full flex flex-col antialiased">
-        <SessionProviderWrapper>{children}</SessionProviderWrapper>
+        {children}
       </body>
     </html>
   );

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { Search, Bell, ChevronDown, X, LogOut, User, List, Menu } from "lucide-react";
-import { useSession, signOut, signIn } from "next-auth/react";
+
 import moviesData from "@/lib/movies.json";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
@@ -22,7 +22,7 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarProps) {
-  const { data: session } = useSession();
+  const session = null;
   const [scrolled, setScrolled]       = useState(false);
   const [searchOpen, setSearchOpen]   = useState(false);
   const [searchQ, setSearchQ]         = useState("");
@@ -164,13 +164,13 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
                     <List size={15} /> Миний жагсаалт
                   </button>
                   {session ? (
-                    <button onClick={() => { setProfileOpen(false); signOut({ callbackUrl:"/login" }); }}
+                    <button onClick={() => { setProfileOpen(false); window.location.href="/"; }}
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors text-left"
                       style={{ fontFamily:"'Barlow',sans-serif", border:"none", background:"none", cursor:"pointer" }}>
                       <LogOut size={15} /> Гарах
                     </button>
                   ) : (
-                    <button onClick={() => { setProfileOpen(false); signIn(); }}
+                    <button onClick={() => { setProfileOpen(false); window.location.href="/login"; }}
                       className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors text-left"
                       style={{ fontFamily:"'Barlow',sans-serif", border:"none", background:"none", cursor:"pointer" }}>
                       <User size={15} /> Нэвтрэх
@@ -237,13 +237,13 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
                 <List size={16} /> Миний жагсаалт
               </button>
               {session ? (
-                <button onClick={() => { setMobileOpen(false); signOut({ callbackUrl:"/login" }); }}
+                <button onClick={() => { setMobileOpen(false); window.location.href="/"; }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/5"
                   style={{ fontFamily:"'Barlow',sans-serif", fontSize:"0.9rem", color:"#f87171", border:"none", background:"none", cursor:"pointer" }}>
                   <LogOut size={16} /> Гарах
                 </button>
               ) : (
-                <button onClick={() => { setMobileOpen(false); signIn(); }}
+                <button onClick={() => { setMobileOpen(false); window.location.href="/login"; }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/5"
                   style={{ fontFamily:"'Barlow',sans-serif", fontSize:"0.9rem", color:"rgba(255,255,255,0.7)", border:"none", background:"none", cursor:"pointer" }}>
                   <User size={16} /> Нэвтрэх
