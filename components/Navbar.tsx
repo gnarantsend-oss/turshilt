@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { Search, Bell, ChevronDown, X, LogOut, User, List, Menu } from "lucide-react";
-
+import { Search, Bell, ChevronDown, X, List, Menu } from "lucide-react";
 import moviesData from "@/lib/movies.json";
 import { useBodyScrollLock } from "@/hooks/useBodyScrollLock";
 
@@ -15,14 +14,12 @@ type Movie = {
 const movies = moviesData as Movie[];
 
 interface NavbarProps {
-  // onSearch: хайлтын query өөрчлөгдөх бүрт parent-д дамжуулна
   onSearch?: (query: string) => void;
   onMovieSelect?: (movie: Movie) => void;
   onNavClick?: (section: string) => void;
 }
 
 export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarProps) {
-  const session = null;
   const [scrolled, setScrolled]       = useState(false);
   const [searchOpen, setSearchOpen]   = useState(false);
   const [searchQ, setSearchQ]         = useState("");
@@ -31,8 +28,6 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
   const [activeNav, setActiveNav]     = useState("hero-section");
   const profileRef = useRef<HTMLDivElement>(null);
 
-  // FIX: useBodyScrollLock — search overlay болон mobile drawer нээлттэй
-  // үед overflow-г hook-оор удирдана. Өмнөх useEffect-ийн шууд тавилтыг арилгав.
   useBodyScrollLock(searchOpen || mobileOpen);
 
   useEffect(() => {
@@ -48,7 +43,6 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      // Cmd+K / Ctrl+K — хайлт нээх
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
         setSearchOpen(true);
@@ -84,8 +78,6 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const initials = session?.user?.name ? session.user.name.charAt(0).toUpperCase() : "Н";
-
   const navLinks = [
     { label: "Нүүр",           id: "hero-section" },
     { label: "Трэнд",          id: "trending-section" },
@@ -117,7 +109,6 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
         </div>
 
         <div className="flex items-center gap-4 text-gray-300">
-          {/* Search + Cmd+K hint */}
           <button
             onClick={() => setSearchOpen(true)}
             className="hover:text-white transition-colors flex items-center gap-2"
@@ -138,44 +129,20 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
           {/* Profile — desktop */}
           <div className="relative hidden md:block" ref={profileRef}>
             <button onClick={() => setProfileOpen(p => !p)} className="flex items-center gap-2 cursor-pointer">
-              {session?.user?.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={session.user.image} alt="user" className="w-8 h-8 rounded object-cover" />
-              ) : (
-                <div className="w-8 h-8 rounded bg-[#E50914] flex items-center justify-center text-sm font-bold text-white">
-                  {initials}
-                </div>
-              )}
+              <div className="w-8 h-8 rounded bg-[#E50914] flex items-center justify-center text-sm font-bold text-white">
+                Н
+              </div>
               <ChevronDown size={14} className={`transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`} />
             </button>
 
             {profileOpen && (
               <div className="absolute right-0 top-full mt-2 w-52 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[200]">
-                {session?.user && (
-                  <div className="px-4 py-3 border-b border-white/10">
-                    <p className="text-white text-sm font-semibold truncate">{session.user.name}</p>
-                    <p className="text-gray-400 text-xs truncate">{session.user.email}</p>
-                  </div>
-                )}
                 <div className="py-1">
                   <button onClick={() => { scrollTo("mylist-section"); setProfileOpen(false); }}
                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors text-left"
                     style={{ fontFamily:"'Barlow',sans-serif", border:"none", background:"none", cursor:"pointer" }}>
                     <List size={15} /> Миний жагсаалт
                   </button>
-                  {session ? (
-                    <button onClick={() => { setProfileOpen(false); window.location.href="/"; }}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-white/5 transition-colors text-left"
-                      style={{ fontFamily:"'Barlow',sans-serif", border:"none", background:"none", cursor:"pointer" }}>
-                      <LogOut size={15} /> Гарах
-                    </button>
-                  ) : (
-                    <button onClick={() => { setProfileOpen(false); window.location.href="/login"; }}
-                      className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors text-left"
-                      style={{ fontFamily:"'Barlow',sans-serif", border:"none", background:"none", cursor:"pointer" }}>
-                      <User size={15} /> Нэвтрэх
-                    </button>
-                  )}
                 </div>
               </div>
             )}
@@ -217,38 +184,11 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
               })}
             </nav>
             <div style={{ borderTop:"1px solid rgba(255,255,255,0.07)", padding:"16px 12px" }}>
-              {session?.user && (
-                <div className="flex items-center gap-3 px-4 py-3 mb-2 rounded-xl" style={{ background:"rgba(255,255,255,0.04)" }}>
-                  {session.user.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={session.user.image} alt="user" className="w-9 h-9 rounded-full object-cover flex-shrink-0" />
-                  ) : (
-                    <div className="w-9 h-9 rounded-full bg-[#E50914] flex items-center justify-center text-sm font-bold text-white flex-shrink-0">{initials}</div>
-                  )}
-                  <div className="overflow-hidden">
-                    <p className="text-white text-sm font-semibold truncate">{session.user.name}</p>
-                    <p className="text-gray-500 text-xs truncate">{session.user.email}</p>
-                  </div>
-                </div>
-              )}
               <button onClick={() => scrollTo("mylist-section")}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/5"
                 style={{ fontFamily:"'Barlow',sans-serif", fontSize:"0.9rem", color:"rgba(255,255,255,0.7)", border:"none", background:"none", cursor:"pointer" }}>
                 <List size={16} /> Миний жагсаалт
               </button>
-              {session ? (
-                <button onClick={() => { setMobileOpen(false); window.location.href="/"; }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/5"
-                  style={{ fontFamily:"'Barlow',sans-serif", fontSize:"0.9rem", color:"#f87171", border:"none", background:"none", cursor:"pointer" }}>
-                  <LogOut size={16} /> Гарах
-                </button>
-              ) : (
-                <button onClick={() => { setMobileOpen(false); window.location.href="/login"; }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/5"
-                  style={{ fontFamily:"'Barlow',sans-serif", fontSize:"0.9rem", color:"rgba(255,255,255,0.7)", border:"none", background:"none", cursor:"pointer" }}>
-                  <User size={16} /> Нэвтрэх
-                </button>
-              )}
             </div>
           </div>
         </>
