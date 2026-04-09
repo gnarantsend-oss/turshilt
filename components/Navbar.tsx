@@ -43,15 +43,8 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        setSearchOpen(true);
-      }
-      if (e.key === "Escape") {
-        setSearchOpen(false);
-        setProfileOpen(false);
-        setMobileOpen(false);
-      }
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); setSearchOpen(true); }
+      if (e.key === "Escape") { setSearchOpen(false); setProfileOpen(false); setMobileOpen(false); }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -59,8 +52,7 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node))
-        setProfileOpen(false);
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -71,9 +63,7 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
     : [];
 
   const scrollTo = (id: string) => {
-    setActiveNav(id);
-    setMobileOpen(false);
-    onNavClick?.(id);
+    setActiveNav(id); setMobileOpen(false); onNavClick?.(id);
     const el = document.getElementById(id);
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -88,130 +78,81 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
 
   return (
     <>
-      <nav className={`fixed top-0 w-full px-6 md:px-14 py-4 z-50 flex items-center justify-between transition-all duration-500 ${
-        scrolled ? "bg-[#141414] shadow-[0_2px_20px_rgba(0,0,0,0.8)]" : "bg-gradient-to-b from-black/90 to-transparent"
-      }`}>
+      <nav className={`fixed top-0 w-full px-6 md:px-14 py-4 z-50 flex items-center justify-between transition-all duration-500 ${scrolled ? "bg-[#141414] shadow-[0_2px_20px_rgba(0,0,0,0.8)]" : "bg-gradient-to-b from-black/90 to-transparent"}`}>
         <div className="flex items-center gap-8">
-          <button onClick={() => scrollTo("hero-section")}
-            style={{ fontFamily:"'Bebas Neue',sans-serif", background:"none", border:"none", cursor:"pointer", padding:0 }}
-            className="text-[#E50914] text-4xl tracking-widest select-none">
-            NABO
-          </button>
+          <button onClick={() => scrollTo("hero-section")} style={{ fontFamily:"'Bebas Neue',sans-serif", background:"none", border:"none", cursor:"pointer", padding:0 }} className="text-[#E50914] text-4xl tracking-widest select-none">NABO</button>
           <div className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300">
             {navLinks.map(({ label, id }) => (
-              <button key={id} onClick={() => scrollTo(id)}
-                className={`hover:text-white transition-colors bg-transparent border-none cursor-pointer font-medium text-sm ${activeNav === id ? "text-white font-semibold" : "text-gray-300"}`}
-                style={{ fontFamily:"'Barlow',sans-serif" }}>
-                {label}
-              </button>
+              <button key={id} onClick={() => scrollTo(id)} className={`hover:text-white transition-colors bg-transparent border-none cursor-pointer font-medium text-sm ${activeNav === id ? "text-white font-semibold" : "text-gray-300"}`} style={{ fontFamily:"'Barlow',sans-serif" }}>{label}</button>
             ))}
           </div>
         </div>
-
         <div className="flex items-center gap-4 text-gray-300">
-          <button
-            onClick={() => setSearchOpen(true)}
-            className="hover:text-white transition-colors flex items-center gap-2"
-            title="Хайх (Ctrl+K)"
-          >
+          <button onClick={() => setSearchOpen(true)} className="hover:text-white transition-colors flex items-center gap-2" title="Хайх (Ctrl+K)">
             <Search size={20} />
-            <span className="hidden md:flex items-center gap-0.5 text-[10px] opacity-30 border border-white/20 px-1.5 py-0.5 rounded-md font-mono leading-none">
-              ⌘K
-            </span>
+            <span className="hidden md:flex items-center gap-0.5 text-[10px] opacity-30 border border-white/20 px-1.5 py-0.5 rounded-md font-mono leading-none">⌘K</span>
           </button>
-
-          <button className="hidden md:flex hover:text-white transition-colors relative" title="Мэдэгдэл"
-            onClick={() => alert("Шинэ мэдэгдэл байхгүй")}>
+          <button className="hidden md:flex hover:text-white transition-colors relative" onClick={() => alert("Шинэ мэдэгдэл байхгүй")}>
             <Bell size={20} />
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#E50914] rounded-full" />
           </button>
-
-          {/* Profile — desktop */}
           <div className="relative hidden md:block" ref={profileRef}>
             <button onClick={() => setProfileOpen(p => !p)} className="flex items-center gap-2 cursor-pointer">
-              <div className="w-8 h-8 rounded bg-[#E50914] flex items-center justify-center text-sm font-bold text-white">
-                Н
-              </div>
+              <div className="w-8 h-8 rounded bg-[#E50914] flex items-center justify-center text-sm font-bold text-white">Н</div>
               <ChevronDown size={14} className={`transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`} />
             </button>
-
             {profileOpen && (
               <div className="absolute right-0 top-full mt-2 w-52 bg-[#1a1a1a] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[200]">
                 <div className="py-1">
-                  <button onClick={() => { scrollTo("mylist-section"); setProfileOpen(false); }}
-                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors text-left"
-                    style={{ fontFamily:"'Barlow',sans-serif", border:"none", background:"none", cursor:"pointer" }}>
+                  <button onClick={() => { scrollTo("mylist-section"); setProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors text-left" style={{ border:"none", background:"none", cursor:"pointer" }}>
                     <List size={15} /> Миний жагсаалт
                   </button>
                 </div>
               </div>
             )}
           </div>
-
-          {/* Hamburger — mobile */}
-          <button
-            className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg hover:bg-white/10 transition-colors"
-            aria-label="Цэс нээх" aria-expanded={mobileOpen}
-            onClick={() => setMobileOpen(s => !s)}
-          >
+          <button className="md:hidden flex items-center justify-center w-9 h-9 rounded-lg hover:bg-white/10 transition-colors" onClick={() => setMobileOpen(s => !s)}>
             {mobileOpen ? <X size={20} className="text-white" /> : <Menu size={20} className="text-gray-300" />}
           </button>
         </div>
       </nav>
-
-      {/* ── Mobile Drawer ── */}
       {mobileOpen && (
         <>
           <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden" onClick={() => setMobileOpen(false)} />
-          <div className="fixed top-0 right-0 h-full w-72 z-50 md:hidden flex flex-col"
-            style={{ background:"rgba(14,14,14,0.97)", backdropFilter:"blur(24px)", WebkitBackdropFilter:"blur(24px)", borderLeft:"1px solid rgba(255,255,255,0.07)", boxShadow:"-8px 0 40px rgba(0,0,0,0.7)" }}>
+          <div className="fixed top-0 right-0 h-full w-72 z-50 md:hidden flex flex-col" style={{ background:"rgba(14,14,14,0.97)", backdropFilter:"blur(24px)", borderLeft:"1px solid rgba(255,255,255,0.07)", boxShadow:"-8px 0 40px rgba(0,0,0,0.7)" }}>
             <div className="flex items-center justify-between px-6 py-5" style={{ borderBottom:"1px solid rgba(255,255,255,0.07)" }}>
-              <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:"1.6rem", letterSpacing:"0.12em", color:"#E50914" }}>NABO</span>
-              <button onClick={() => setMobileOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 transition-colors text-gray-400 hover:text-white">
-                <X size={18} />
-              </button>
+              <span style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:"1.6rem", color:"#E50914" }}>NABO</span>
+              <button onClick={() => setMobileOpen(false)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10 text-gray-400 hover:text-white"><X size={18} /></button>
             </div>
             <nav className="flex flex-col gap-1 px-3 py-4 flex-1 overflow-y-auto">
               {navLinks.map(({ label, id }) => {
                 const active = activeNav === id;
                 return (
-                  <button key={id} onClick={() => scrollTo(id)}
-                    className="w-full flex items-center px-4 py-3.5 rounded-xl text-left transition-all"
-                    style={{ fontFamily:"'Barlow',sans-serif", fontSize:"0.95rem", fontWeight: active ? 700 : 500, border:"none", cursor:"pointer", background: active ? "rgba(201,168,76,0.1)" : "transparent", color: active ? "#C9A84C" : "rgba(255,255,255,0.75)", borderLeft: active ? "2px solid #C9A84C" : "2px solid transparent" }}>
-                    {label}
-                  </button>
+                  <button key={id} onClick={() => scrollTo(id)} className="w-full flex items-center px-4 py-3.5 rounded-xl text-left transition-all" style={{ fontWeight: active ? 700 : 500, border:"none", cursor:"pointer", background: active ? "rgba(201,168,76,0.1)" : "transparent", color: active ? "#C9A84C" : "rgba(255,255,255,0.75)", borderLeft: active ? "2px solid #C9A84C" : "2px solid transparent" }}>{label}</button>
                 );
               })}
             </nav>
             <div style={{ borderTop:"1px solid rgba(255,255,255,0.07)", padding:"16px 12px" }}>
-              <button onClick={() => scrollTo("mylist-section")}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors hover:bg-white/5"
-                style={{ fontFamily:"'Barlow',sans-serif", fontSize:"0.9rem", color:"rgba(255,255,255,0.7)", border:"none", background:"none", cursor:"pointer" }}>
+              <button onClick={() => scrollTo("mylist-section")} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left hover:bg-white/5" style={{ fontSize:"0.9rem", color:"rgba(255,255,255,0.7)", border:"none", background:"none", cursor:"pointer" }}>
                 <List size={16} /> Миний жагсаалт
               </button>
             </div>
           </div>
         </>
       )}
-
-      {/* ── Search Overlay (Cmd+K) ── */}
       {searchOpen && (
         <div className="search-overlay" onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false); }}>
           <div className="search-input-wrap">
-            <input id="search-input" className="search-input" placeholder="Кино, цуврал хайх..."
-              value={searchQ} onChange={e => { setSearchQ(e.target.value); onSearch?.(e.target.value); }} />
+            <input id="search-input" className="search-input" placeholder="Кино, цуврал хайх..." value={searchQ} onChange={e => { setSearchQ(e.target.value); onSearch?.(e.target.value); }} />
             <div className="hidden md:flex items-center gap-1 text-xs text-white/20 font-mono mr-2">esc</div>
-            <button className="search-close-btn" onClick={() => setSearchOpen(false)}>
-              <X size={20} />
-            </button>
+            <button className="search-close-btn" onClick={() => setSearchOpen(false)}><X size={20} /></button>
           </div>
           {searchQ.trim().length > 1 && (
             <div className="search-results scrollbar-hide">
               {results.length === 0 ? (
                 <div className="search-empty" style={{ gridColumn:"1/-1" }}>&ldquo;{searchQ}&rdquo; — олдсонгүй</div>
               ) : results.map(m => (
-                <div key={m.id} className="search-result-card"
-                  onClick={() => { onMovieSelect?.(m); setSearchOpen(false); }}>
+                <div key={m.id} className="search-result-card" onClick={() => { onMovieSelect?.(m); setSearchOpen(false); }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={m.poster || m.banner} alt={m.title} style={{ width:"100%", height:110, objectFit:"cover", display:"block" }} />
                   <div className="search-result-info">
@@ -222,9 +163,7 @@ export default function Navbar({ onMovieSelect, onNavClick, onSearch }: NavbarPr
               ))}
             </div>
           )}
-          {searchQ.trim().length === 0 && (
-            <div className="search-empty">Хайх гарчгаа бичнэ үү...</div>
-          )}
+          {searchQ.trim().length === 0 && <div className="search-empty">Хайх гарчгаа бичнэ үү...</div>}
         </div>
       )}
     </>
